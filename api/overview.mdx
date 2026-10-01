@@ -1,5 +1,5 @@
 ---
-title: "CREW REST API Overview"
+title: "CREW REST API Overview — Endpoints, Auth & Rate Limits"
 sidebarTitle: "Overview"
 description: "The CREW REST API lets you integrate crew discovery, location browsing, equipment listings, and opportunity management into your own tools and workflows."
 ---
@@ -10,7 +10,7 @@ The CREW API is a RESTful HTTP API that gives you programmatic access to the ful
 
 All API endpoints share the following base URL:
 
-```
+```bash
 https://api.crew.app/v1
 ```
 
@@ -85,7 +85,7 @@ List endpoints return paginated results by default. Use the `page` and `per_page
 
 The `meta` object in every paginated response tells you the total number of records and your current position so you can determine how many pages exist.
 
-```
+```bash
 GET https://api.crew.app/v1/listings?page=3&per_page=25
 ```
 

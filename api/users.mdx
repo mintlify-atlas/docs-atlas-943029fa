@@ -1,7 +1,7 @@
 ---
-title: "Users API — Crew Profiles and Filmmaker Accounts"
+title: "Users API — Crew Profiles and Filmmaker Accounts on CREW"
 sidebarTitle: "Users"
-description: "REST API endpoints for searching crew members, retrieving user profiles, creating accounts, and updating profile data on CREW."
+description: "REST API endpoints for searching crew members, retrieving user profiles, creating accounts, and updating profile data on the CREW platform."
 ---
 
 The Users API provides full access to CREW member profiles, from searching available crew by role and location to creating new accounts and updating profile data. Every person on CREW — whether a filmmaker posting productions or a crew member looking for work — is represented as a user resource.
@@ -109,7 +109,7 @@ Returns an array of user summary objects.
 <CodeGroup>
 
 ```bash curl
-curl -G https://api.crew.film/v1/users \
+curl -G https://api.crew.app/v1/users \
   -H "Authorization: Bearer $CREW_API_KEY" \
   --data-urlencode "role=cinematographer" \
   --data-urlencode "location=Los Angeles" \
@@ -129,7 +129,7 @@ const params = new URLSearchParams({
   per_page: 25,
 });
 
-const res = await fetch(`https://api.crew.film/v1/users?${params}`, {
+const res = await fetch(`https://api.crew.app/v1/users?${params}`, {
   headers: {
     Authorization: `Bearer ${process.env.CREW_API_KEY}`,
   },
@@ -153,7 +153,7 @@ params = {
 }
 
 response = requests.get(
-    "https://api.crew.film/v1/users",
+    "https://api.crew.app/v1/users",
     headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
     params=params,
 )
@@ -291,14 +291,14 @@ Retrieve the complete profile for a single CREW member by their unique ID. This 
 <CodeGroup>
 
 ```bash curl
-curl https://api.crew.film/v1/users/usr_4kXmQ92bLp \
+curl https://api.crew.app/v1/users/usr_4kXmQ92bLp \
   -H "Authorization: Bearer $CREW_API_KEY"
 ```
 
 ```javascript JavaScript
 const userId = "usr_4kXmQ92bLp";
 
-const res = await fetch(`https://api.crew.film/v1/users/${userId}`, {
+const res = await fetch(`https://api.crew.app/v1/users/${userId}`, {
   headers: {
     Authorization: `Bearer ${process.env.CREW_API_KEY}`,
   },
@@ -315,7 +315,7 @@ import requests
 user_id = "usr_4kXmQ92bLp"
 
 response = requests.get(
-    f"https://api.crew.film/v1/users/{user_id}",
+    f"https://api.crew.app/v1/users/{user_id}",
     headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
 )
 
@@ -384,7 +384,7 @@ Returns `201 Created` with the new user object and the account's API key.
 <CodeGroup>
 
 ```bash curl
-curl -X POST https://api.crew.film/v1/users \
+curl -X POST https://api.crew.app/v1/users \
   -H "Content-Type: application/json" \
   -d '{
     "email": "alex@example.com",
@@ -395,7 +395,7 @@ curl -X POST https://api.crew.film/v1/users \
 ```
 
 ```javascript JavaScript
-const res = await fetch("https://api.crew.film/v1/users", {
+const res = await fetch("https://api.crew.app/v1/users", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
@@ -422,7 +422,7 @@ payload = {
 }
 
 response = requests.post(
-    "https://api.crew.film/v1/users",
+    "https://api.crew.app/v1/users",
     json=payload,
 )
 
@@ -500,7 +500,7 @@ Returns `200 OK` with the updated user object.
 <CodeGroup>
 
 ```bash curl
-curl -X PUT https://api.crew.film/v1/users/usr_4kXmQ92bLp \
+curl -X PUT https://api.crew.app/v1/users/usr_4kXmQ92bLp \
   -H "Authorization: Bearer $CREW_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -517,7 +517,7 @@ curl -X PUT https://api.crew.film/v1/users/usr_4kXmQ92bLp \
 ```javascript JavaScript
 const userId = "usr_4kXmQ92bLp";
 
-const res = await fetch(`https://api.crew.film/v1/users/${userId}`, {
+const res = await fetch(`https://api.crew.app/v1/users/${userId}`, {
   method: "PUT",
   headers: {
     Authorization: `Bearer ${process.env.CREW_API_KEY}`,
@@ -555,7 +555,7 @@ payload = {
 }
 
 response = requests.put(
-    f"https://api.crew.film/v1/users/{user_id}",
+    f"https://api.crew.app/v1/users/{user_id}",
     headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
     json=payload,
 )

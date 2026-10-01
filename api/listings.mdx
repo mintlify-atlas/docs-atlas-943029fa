@@ -1,7 +1,7 @@
 ---
-title: "Listings API — Browse All Production Resources"
+title: "Listings API — Unified Production Resource Discovery"
 sidebarTitle: "Listings"
-description: "The CREW listings endpoint returns a unified feed of crew, location, equipment, and opportunity listings — useful for building search interfaces or aggregated dashboards."
+description: "Search crew profiles, filming locations, equipment rentals, and opportunities in one unified feed — ideal for building cross-category discovery dashboards."
 ---
 
 The Listings API provides a single unified endpoint that aggregates crew profiles, filming locations, equipment rentals, and production opportunities into one searchable feed. It is the fastest way to build a cross-category search experience or a general-purpose discovery dashboard without having to fan out requests to multiple endpoints.
@@ -90,7 +90,7 @@ Returns an array of listing summary objects. The `type` field identifies the cat
 
 ```bash curl
 # Search all listing types for "sound mixer" in Atlanta
-curl -G https://api.crew.film/v1/listings \
+curl -G https://api.crew.app/v1/listings \
   -H "Authorization: Bearer $CREW_API_KEY" \
   --data-urlencode "q=sound mixer" \
   --data-urlencode "location=Atlanta" \
@@ -104,7 +104,7 @@ const params = new URLSearchParams({
   per_page: 30,
 });
 
-const res = await fetch(`https://api.crew.film/v1/listings?${params}`, {
+const res = await fetch(`https://api.crew.app/v1/listings?${params}`, {
   headers: {
     Authorization: `Bearer ${process.env.CREW_API_KEY}`,
   },
@@ -132,7 +132,7 @@ params = {
 }
 
 response = requests.get(
-    "https://api.crew.film/v1/listings",
+    "https://api.crew.app/v1/listings",
     headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
     params=params,
 )
@@ -217,14 +217,14 @@ Returns the full listing object. The `type` field is always present so you can b
 <CodeGroup>
 
 ```bash curl
-curl https://api.crew.film/v1/listings/lst_7nRpT03wKc \
+curl https://api.crew.app/v1/listings/lst_7nRpT03wKc \
   -H "Authorization: Bearer $CREW_API_KEY"
 ```
 
 ```javascript JavaScript
 const listingId = "lst_7nRpT03wKc";
 
-const res = await fetch(`https://api.crew.film/v1/listings/${listingId}`, {
+const res = await fetch(`https://api.crew.app/v1/listings/${listingId}`, {
   headers: {
     Authorization: `Bearer ${process.env.CREW_API_KEY}`,
   },
@@ -256,7 +256,7 @@ import requests
 listing_id = "lst_7nRpT03wKc"
 
 response = requests.get(
-    f"https://api.crew.film/v1/listings/{listing_id}",
+    f"https://api.crew.app/v1/listings/{listing_id}",
     headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
 )
 

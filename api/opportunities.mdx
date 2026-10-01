@@ -1,5 +1,5 @@
 ---
-title: "Opportunities API — Film Production Job Listings"
+title: "Opportunities API — Film Production Job Listings on CREW"
 sidebarTitle: "Opportunities"
 description: "REST API endpoints for browsing film production opportunity listings, retrieving role details, and posting new opportunities on CREW."
 ---
@@ -134,7 +134,7 @@ Returns an array of opportunity summary objects.
 <CodeGroup>
 
 ```bash curl
-curl -G https://api.crew.film/v1/opportunities \
+curl -G https://api.crew.app/v1/opportunities \
   -H "Authorization: Bearer $CREW_API_KEY" \
   --data-urlencode "production_type=film" \
   --data-urlencode "role=gaffer" \
@@ -154,7 +154,7 @@ const params = new URLSearchParams({
   shoot_to: "2025-11-30",
 });
 
-const res = await fetch(`https://api.crew.film/v1/opportunities?${params}`, {
+const res = await fetch(`https://api.crew.app/v1/opportunities?${params}`, {
   headers: {
     Authorization: `Bearer ${process.env.CREW_API_KEY}`,
   },
@@ -178,7 +178,7 @@ params = {
 }
 
 response = requests.get(
-    "https://api.crew.film/v1/opportunities",
+    "https://api.crew.app/v1/opportunities",
     headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
     params=params,
 )
@@ -304,7 +304,7 @@ Retrieve the full detail record for a single opportunity listing. Includes the c
 <CodeGroup>
 
 ```bash curl
-curl https://api.crew.film/v1/opportunities/opp_6hDcN38xRt \
+curl https://api.crew.app/v1/opportunities/opp_6hDcN38xRt \
   -H "Authorization: Bearer $CREW_API_KEY"
 ```
 
@@ -312,7 +312,7 @@ curl https://api.crew.film/v1/opportunities/opp_6hDcN38xRt \
 const opportunityId = "opp_6hDcN38xRt";
 
 const res = await fetch(
-  `https://api.crew.film/v1/opportunities/${opportunityId}`,
+  `https://api.crew.app/v1/opportunities/${opportunityId}`,
   {
     headers: {
       Authorization: `Bearer ${process.env.CREW_API_KEY}`,
@@ -332,7 +332,7 @@ import requests
 opportunity_id = "opp_6hDcN38xRt"
 
 response = requests.get(
-    f"https://api.crew.film/v1/opportunities/{opportunity_id}",
+    f"https://api.crew.app/v1/opportunities/{opportunity_id}",
     headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
 )
 
@@ -402,7 +402,7 @@ Returns `201 Created` with the full created opportunity object.
 <CodeGroup>
 
 ```bash curl
-curl -X POST https://api.crew.film/v1/opportunities \
+curl -X POST https://api.crew.app/v1/opportunities \
   -H "Authorization: Bearer $CREW_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -420,7 +420,7 @@ curl -X POST https://api.crew.film/v1/opportunities \
 ```
 
 ```javascript JavaScript
-const res = await fetch("https://api.crew.film/v1/opportunities", {
+const res = await fetch("https://api.crew.app/v1/opportunities", {
   method: "POST",
   headers: {
     Authorization: `Bearer ${process.env.CREW_API_KEY}`,
@@ -467,7 +467,7 @@ payload = {
 }
 
 response = requests.post(
-    "https://api.crew.film/v1/opportunities",
+    "https://api.crew.app/v1/opportunities",
     headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
     json=payload,
 )
@@ -508,7 +508,7 @@ Returns `200 OK` with the updated opportunity object.
 
 ```bash curl
 # Mark a listing as filled
-curl -X PATCH https://api.crew.film/v1/opportunities/opp_6hDcN38xRt \
+curl -X PATCH https://api.crew.app/v1/opportunities/opp_6hDcN38xRt \
   -H "Authorization: Bearer $CREW_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"status": "filled"}'
@@ -518,7 +518,7 @@ curl -X PATCH https://api.crew.film/v1/opportunities/opp_6hDcN38xRt \
 const opportunityId = "opp_6hDcN38xRt";
 
 const res = await fetch(
-  `https://api.crew.film/v1/opportunities/${opportunityId}`,
+  `https://api.crew.app/v1/opportunities/${opportunityId}`,
   {
     method: "PATCH",
     headers: {
@@ -540,7 +540,7 @@ import requests
 opportunity_id = "opp_6hDcN38xRt"
 
 response = requests.patch(
-    f"https://api.crew.film/v1/opportunities/{opportunity_id}",
+    f"https://api.crew.app/v1/opportunities/{opportunity_id}",
     headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
     json={"status": "filled"},
 )

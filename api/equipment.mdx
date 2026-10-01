@@ -1,7 +1,7 @@
 ---
-title: "Equipment API — Film Gear Rental Listings"
+title: "Equipment API — Film Gear Rental Listings on CREW Platform"
 sidebarTitle: "Equipment"
-description: "REST API endpoints for browsing film equipment rental listings, retrieving gear details, and creating equipment listings on CREW."
+description: "REST API endpoints for browsing film equipment rental listings, retrieving full gear details, and creating or managing equipment listings on CREW."
 ---
 
 The Equipment API powers CREW's gear rental marketplace, covering everything from cinema cameras and prime lens sets to HMI lighting packages, boom poles, and production vehicles. Search available kit by category, brand, condition, and shoot dates, then retrieve full detail on any piece of equipment including accessory lists and availability calendars. Sensitive information such as pickup addresses is protected until an inquiry is confirmed.
@@ -138,7 +138,7 @@ Returns an array of equipment summary objects.
 <CodeGroup>
 
 ```bash curl
-curl -G https://api.crew.film/v1/equipment \
+curl -G https://api.crew.app/v1/equipment \
   -H "Authorization: Bearer $CREW_API_KEY" \
   --data-urlencode "category=cameras" \
   --data-urlencode "brand=ARRI" \
@@ -160,7 +160,7 @@ const params = new URLSearchParams({
   rate_max: 600,
 });
 
-const res = await fetch(`https://api.crew.film/v1/equipment?${params}`, {
+const res = await fetch(`https://api.crew.app/v1/equipment?${params}`, {
   headers: {
     Authorization: `Bearer ${process.env.CREW_API_KEY}`,
   },
@@ -185,7 +185,7 @@ params = {
 }
 
 response = requests.get(
-    "https://api.crew.film/v1/equipment",
+    "https://api.crew.app/v1/equipment",
     headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
     params=params,
 )
@@ -311,14 +311,14 @@ Retrieve the full detail record for a single equipment listing. All fields from 
 <CodeGroup>
 
 ```bash curl
-curl https://api.crew.film/v1/equipment/eqp_2mLsY54nHw \
+curl https://api.crew.app/v1/equipment/eqp_2mLsY54nHw \
   -H "Authorization: Bearer $CREW_API_KEY"
 ```
 
 ```javascript JavaScript
 const equipmentId = "eqp_2mLsY54nHw";
 
-const res = await fetch(`https://api.crew.film/v1/equipment/${equipmentId}`, {
+const res = await fetch(`https://api.crew.app/v1/equipment/${equipmentId}`, {
   headers: {
     Authorization: `Bearer ${process.env.CREW_API_KEY}`,
   },
@@ -342,7 +342,7 @@ import requests
 equipment_id = "eqp_2mLsY54nHw"
 
 response = requests.get(
-    f"https://api.crew.film/v1/equipment/{equipment_id}",
+    f"https://api.crew.app/v1/equipment/{equipment_id}",
     headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
 )
 
@@ -429,7 +429,7 @@ Returns `201 Created` with the full created equipment object.
 <CodeGroup>
 
 ```bash curl
-curl -X POST https://api.crew.film/v1/equipment \
+curl -X POST https://api.crew.app/v1/equipment \
   -H "Authorization: Bearer $CREW_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -458,7 +458,7 @@ curl -X POST https://api.crew.film/v1/equipment \
 ```
 
 ```javascript JavaScript
-const res = await fetch("https://api.crew.film/v1/equipment", {
+const res = await fetch("https://api.crew.app/v1/equipment", {
   method: "POST",
   headers: {
     Authorization: `Bearer ${process.env.CREW_API_KEY}`,
@@ -526,7 +526,7 @@ payload = {
 }
 
 response = requests.post(
-    "https://api.crew.film/v1/equipment",
+    "https://api.crew.app/v1/equipment",
     headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
     json=payload,
 )

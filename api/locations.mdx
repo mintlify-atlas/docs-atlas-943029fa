@@ -1,5 +1,5 @@
 ---
-title: "Locations API — Filming Location Listings"
+title: "Locations API — Search and Manage Filming Locations"
 sidebarTitle: "Locations"
 description: "REST API endpoints for searching filming locations, retrieving location details, and creating or updating location listings on CREW."
 ---
@@ -126,7 +126,7 @@ Returns an array of location summary objects.
 <CodeGroup>
 
 ```bash curl
-curl -G https://api.crew.film/v1/locations \
+curl -G https://api.crew.app/v1/locations \
   -H "Authorization: Bearer $CREW_API_KEY" \
   --data-urlencode "city=New York" \
   --data-urlencode "type=practical" \
@@ -146,7 +146,7 @@ const params = new URLSearchParams({
   rate_max: 1500,
 });
 
-const res = await fetch(`https://api.crew.film/v1/locations?${params}`, {
+const res = await fetch(`https://api.crew.app/v1/locations?${params}`, {
   headers: {
     Authorization: `Bearer ${process.env.CREW_API_KEY}`,
   },
@@ -170,7 +170,7 @@ params = {
 }
 
 response = requests.get(
-    "https://api.crew.film/v1/locations",
+    "https://api.crew.app/v1/locations",
     headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
     params=params,
 )
@@ -288,14 +288,14 @@ Retrieve the full detail record for a single location listing. All fields from t
 <CodeGroup>
 
 ```bash curl
-curl https://api.crew.film/v1/locations/loc_9pBzW17vJq \
+curl https://api.crew.app/v1/locations/loc_9pBzW17vJq \
   -H "Authorization: Bearer $CREW_API_KEY"
 ```
 
 ```javascript JavaScript
 const locationId = "loc_9pBzW17vJq";
 
-const res = await fetch(`https://api.crew.film/v1/locations/${locationId}`, {
+const res = await fetch(`https://api.crew.app/v1/locations/${locationId}`, {
   headers: {
     Authorization: `Bearer ${process.env.CREW_API_KEY}`,
   },
@@ -318,7 +318,7 @@ import requests
 location_id = "loc_9pBzW17vJq"
 
 response = requests.get(
-    f"https://api.crew.film/v1/locations/{location_id}",
+    f"https://api.crew.app/v1/locations/{location_id}",
     headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
 )
 
@@ -392,7 +392,7 @@ Returns `201 Created` with the full created location object.
 <CodeGroup>
 
 ```bash curl
-curl -X POST https://api.crew.film/v1/locations \
+curl -X POST https://api.crew.app/v1/locations \
   -H "Authorization: Bearer $CREW_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -415,7 +415,7 @@ curl -X POST https://api.crew.film/v1/locations \
 ```
 
 ```javascript JavaScript
-const res = await fetch("https://api.crew.film/v1/locations", {
+const res = await fetch("https://api.crew.app/v1/locations", {
   method: "POST",
   headers: {
     Authorization: `Bearer ${process.env.CREW_API_KEY}`,
@@ -471,7 +471,7 @@ payload = {
 }
 
 response = requests.post(
-    "https://api.crew.film/v1/locations",
+    "https://api.crew.app/v1/locations",
     headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
     json=payload,
 )
