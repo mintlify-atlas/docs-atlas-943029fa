@@ -1,0 +1,567 @@
+---
+title: "Users API — Crew Profiles and Filmmaker Accounts"
+sidebarTitle: "Users"
+description: "REST API endpoints for searching crew members, retrieving user profiles, creating accounts, and updating profile data on CREW."
+---
+
+The Users API provides full access to CREW member profiles, from searching available crew by role and location to creating new accounts and updating profile data. Every person on CREW — whether a filmmaker posting productions or a crew member looking for work — is represented as a user resource.
+
+<Card title="Authentication" icon="lock" href="/api/authentication">
+  Most Users endpoints require a valid API key. Pass it as a Bearer token in the `Authorization` header.
+</Card>
+
+---
+
+## GET /users
+
+Search and filter the full CREW member directory. Results are paginated and each user object in the list view contains a truncated bio for performance.
+
+<Tip>
+  Combine `available_from` and `available_to` to surface crew members who are free for your specific shoot window. Omitting availability filters returns all users regardless of schedule.
+</Tip>
+
+### Query Parameters
+
+<ParamField query="q" type="string">
+  Full-text search query. Matches against display name, bio, roles, and skills.
+</ParamField>
+
+<ParamField query="role" type="string">
+  Filter by primary role (e.g. `cinematographer`, `gaffer`, `sound-mixer`).
+</ParamField>
+
+<ParamField query="location" type="string">
+  Filter by city, region, or country (e.g. `Los Angeles`, `UK`).
+</ParamField>
+
+<ParamField query="skills" type="string">
+  Comma-separated list of skills to filter by (e.g. `steadicam,drone,underwater`).
+</ParamField>
+
+<ParamField query="available_from" type="date">
+  Start of the availability window. Format: `YYYY-MM-DD`.
+</ParamField>
+
+<ParamField query="available_to" type="date">
+  End of the availability window. Format: `YYYY-MM-DD`.
+</ParamField>
+
+<ParamField query="rate_min" type="integer">
+  Minimum day rate in the account's billing currency.
+</ParamField>
+
+<ParamField query="rate_max" type="integer">
+  Maximum day rate in the account's billing currency.
+</ParamField>
+
+<ParamField query="union" type="boolean">
+  When `true`, returns only union members. When `false`, returns only non-union members. Omit to return all.
+</ParamField>
+
+<ParamField query="page" type="integer" default="1">
+  Page number for paginated results.
+</ParamField>
+
+<ParamField query="per_page" type="integer" default="20">
+  Number of results per page. Maximum: `100`.
+</ParamField>
+
+### Response
+
+Returns an array of user summary objects.
+
+<ResponseField name="id" type="string">
+  Unique identifier for the user.
+</ResponseField>
+
+<ResponseField name="display_name" type="string">
+  The user's public display name.
+</ResponseField>
+
+<ResponseField name="primary_role" type="string">
+  The user's main production role (e.g. `Director of Photography`).
+</ResponseField>
+
+<ResponseField name="location" type="string">
+  The user's listed city or region.
+</ResponseField>
+
+<ResponseField name="bio" type="string">
+  Short biography, truncated to 150 characters in list view. See `GET /users/:id` for the full bio.
+</ResponseField>
+
+<ResponseField name="profile_photo_url" type="string">
+  Absolute URL to the user's profile photo.
+</ResponseField>
+
+<ResponseField name="average_rating" type="float">
+  Mean rating across all reviews received. Range: `0.0` – `5.0`.
+</ResponseField>
+
+<ResponseField name="review_count" type="integer">
+  Total number of reviews the user has received.
+</ResponseField>
+
+<ResponseField name="available" type="boolean">
+  Whether the user is currently marked as available for work.
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl -G https://api.crew.film/v1/users \
+  -H "Authorization: Bearer $CREW_API_KEY" \
+  --data-urlencode "role=cinematographer" \
+  --data-urlencode "location=Los Angeles" \
+  --data-urlencode "available_from=2025-08-01" \
+  --data-urlencode "available_to=2025-08-15" \
+  --data-urlencode "rate_max=800" \
+  --data-urlencode "per_page=25"
+```
+
+```javascript JavaScript
+const params = new URLSearchParams({
+  role: "cinematographer",
+  location: "Los Angeles",
+  available_from: "2025-08-01",
+  available_to: "2025-08-15",
+  rate_max: 800,
+  per_page: 25,
+});
+
+const res = await fetch(`https://api.crew.film/v1/users?${params}`, {
+  headers: {
+    Authorization: `Bearer ${process.env.CREW_API_KEY}`,
+  },
+});
+
+const { data } = await res.json();
+console.log(data);
+```
+
+```python Python
+import os
+import requests
+
+params = {
+    "role": "cinematographer",
+    "location": "Los Angeles",
+    "available_from": "2025-08-01",
+    "available_to": "2025-08-15",
+    "rate_max": 800,
+    "per_page": 25,
+}
+
+response = requests.get(
+    "https://api.crew.film/v1/users",
+    headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
+    params=params,
+)
+
+users = response.json()["data"]
+print(users)
+```
+
+</CodeGroup>
+
+---
+
+## GET /users/:id
+
+Retrieve the complete profile for a single CREW member by their unique ID. This endpoint returns all fields including credits, reviews, social links, and rate information that are omitted from the list view.
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  The unique ID of the user to retrieve.
+</ParamField>
+
+### Response
+
+<ResponseField name="id" type="string">
+  Unique identifier for the user.
+</ResponseField>
+
+<ResponseField name="display_name" type="string">
+  The user's public display name.
+</ResponseField>
+
+<ResponseField name="primary_role" type="string">
+  The user's main production role.
+</ResponseField>
+
+<ResponseField name="additional_roles" type="array">
+  List of secondary roles the user holds.
+</ResponseField>
+
+<ResponseField name="location" type="string">
+  The user's listed city or region.
+</ResponseField>
+
+<ResponseField name="bio" type="string">
+  Full biography text.
+</ResponseField>
+
+<ResponseField name="profile_photo_url" type="string">
+  Absolute URL to the user's profile photo.
+</ResponseField>
+
+<ResponseField name="demo_reel_url" type="string">
+  URL to the user's demo reel (Vimeo, YouTube, or direct link). May be `null`.
+</ResponseField>
+
+<ResponseField name="day_rate" type="integer">
+  The user's listed day rate in their account currency. May be `null` if not set.
+</ResponseField>
+
+<ResponseField name="union_status" type="string">
+  Union membership status. One of: `union`, `non-union`, `not_specified`.
+</ResponseField>
+
+<ResponseField name="skills" type="array">
+  Array of skill strings (e.g. `["Steadicam", "Drone", "Color Grading"]`).
+</ResponseField>
+
+<ResponseField name="credits" type="array">
+  List of production credits.
+
+  <Expandable title="Credit object">
+    <ResponseField name="title" type="string">
+      Title of the production.
+    </ResponseField>
+    <ResponseField name="year" type="integer">
+      Year of the production.
+    </ResponseField>
+    <ResponseField name="role" type="string">
+      The user's role on that production.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="average_rating" type="float">
+  Mean rating across all reviews. Range: `0.0` – `5.0`.
+</ResponseField>
+
+<ResponseField name="review_count" type="integer">
+  Total number of reviews received.
+</ResponseField>
+
+<ResponseField name="reviews" type="array">
+  Array of review objects.
+
+  <Expandable title="Review object">
+    <ResponseField name="author_name" type="string">
+      Display name of the reviewer.
+    </ResponseField>
+    <ResponseField name="rating" type="float">
+      Numeric rating given. Range: `1.0` – `5.0`.
+    </ResponseField>
+    <ResponseField name="body" type="string">
+      Written review text.
+    </ResponseField>
+    <ResponseField name="created_at" type="string">
+      ISO 8601 timestamp of when the review was submitted.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="social_links" type="object">
+  Collection of social and portfolio URLs.
+
+  <Expandable title="Social links object">
+    <ResponseField name="instagram" type="string">
+      Instagram profile URL. May be `null`.
+    </ResponseField>
+    <ResponseField name="vimeo" type="string">
+      Vimeo profile URL. May be `null`.
+    </ResponseField>
+    <ResponseField name="youtube" type="string">
+      YouTube channel URL. May be `null`.
+    </ResponseField>
+    <ResponseField name="imdb" type="string">
+      IMDb profile URL. May be `null`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  ISO 8601 timestamp of when the account was created.
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl https://api.crew.film/v1/users/usr_4kXmQ92bLp \
+  -H "Authorization: Bearer $CREW_API_KEY"
+```
+
+```javascript JavaScript
+const userId = "usr_4kXmQ92bLp";
+
+const res = await fetch(`https://api.crew.film/v1/users/${userId}`, {
+  headers: {
+    Authorization: `Bearer ${process.env.CREW_API_KEY}`,
+  },
+});
+
+const user = await res.json();
+console.log(user.display_name, user.credits);
+```
+
+```python Python
+import os
+import requests
+
+user_id = "usr_4kXmQ92bLp"
+
+response = requests.get(
+    f"https://api.crew.film/v1/users/{user_id}",
+    headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
+)
+
+user = response.json()
+print(user["display_name"], user["credits"])
+```
+
+</CodeGroup>
+
+---
+
+## POST /users
+
+Create a new CREW account. On success, returns the created user object along with a generated API key for the new account. Store this key securely — it is only returned once.
+
+<Warning>
+  The `api_key` field is returned **only once** at creation time. There is no way to retrieve it again. If lost, the user must generate a new key from their account settings.
+</Warning>
+
+### Request Body
+
+<ParamField body="email" type="string" required>
+  A valid email address. Must be unique across all CREW accounts.
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  Account password. Minimum 8 characters.
+</ParamField>
+
+<ParamField body="display_name" type="string" required>
+  The public display name shown on the profile and in search results.
+</ParamField>
+
+<ParamField body="role_type" type="string" required>
+  Account type. One of: `filmmaker`, `crew`, `both`.
+</ParamField>
+
+### Response
+
+Returns `201 Created` with the new user object and the account's API key.
+
+<ResponseField name="id" type="string">
+  Unique identifier for the newly created user.
+</ResponseField>
+
+<ResponseField name="display_name" type="string">
+  The user's display name as provided.
+</ResponseField>
+
+<ResponseField name="email" type="string">
+  The registered email address.
+</ResponseField>
+
+<ResponseField name="role_type" type="string">
+  The account type: `filmmaker`, `crew`, or `both`.
+</ResponseField>
+
+<ResponseField name="api_key" type="string">
+  The API key for the new account. **Shown only once.** Store it immediately.
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  ISO 8601 timestamp of account creation.
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl -X POST https://api.crew.film/v1/users \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "alex@example.com",
+    "password": "s3cur3P@ss!",
+    "display_name": "Alex Rivera",
+    "role_type": "crew"
+  }'
+```
+
+```javascript JavaScript
+const res = await fetch("https://api.crew.film/v1/users", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    email: "alex@example.com",
+    password: "s3cur3P@ss!",
+    display_name: "Alex Rivera",
+    role_type: "crew",
+  }),
+});
+
+const { id, api_key } = await res.json();
+// Store api_key securely — it won't be shown again
+console.log("New user ID:", id);
+```
+
+```python Python
+import requests
+
+payload = {
+    "email": "alex@example.com",
+    "password": "s3cur3P@ss!",
+    "display_name": "Alex Rivera",
+    "role_type": "crew",
+}
+
+response = requests.post(
+    "https://api.crew.film/v1/users",
+    json=payload,
+)
+
+data = response.json()
+# Store api_key securely — it won't be shown again
+print("New user ID:", data["id"])
+```
+
+</CodeGroup>
+
+---
+
+## PUT /users/:id
+
+Update an existing user profile. You may send any subset of the updateable profile fields — only fields included in the request body are modified. Requires the `write` scope and the authenticated user must be the account owner.
+
+<Note>
+  You can only update your own account. Attempting to update another user's profile will return `403 Forbidden`.
+</Note>
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  The unique ID of the user to update.
+</ParamField>
+
+### Request Body
+
+Send any combination of the following fields. Omitted fields are left unchanged.
+
+<ParamField body="display_name" type="string">
+  Updated public display name.
+</ParamField>
+
+<ParamField body="primary_role" type="string">
+  Updated primary production role.
+</ParamField>
+
+<ParamField body="additional_roles" type="array">
+  Updated list of secondary roles.
+</ParamField>
+
+<ParamField body="location" type="string">
+  Updated city or region.
+</ParamField>
+
+<ParamField body="bio" type="string">
+  Updated biography text.
+</ParamField>
+
+<ParamField body="demo_reel_url" type="string">
+  Updated demo reel URL.
+</ParamField>
+
+<ParamField body="day_rate" type="integer">
+  Updated day rate in account currency.
+</ParamField>
+
+<ParamField body="union_status" type="string">
+  Updated union status. One of: `union`, `non-union`, `not_specified`.
+</ParamField>
+
+<ParamField body="skills" type="array">
+  Updated list of skills. This **replaces** the existing skills array entirely.
+</ParamField>
+
+<ParamField body="social_links" type="object">
+  Updated social profile URLs. Accepts any subset of `instagram`, `vimeo`, `youtube`, `imdb`.
+</ParamField>
+
+### Response
+
+Returns `200 OK` with the updated user object.
+
+<CodeGroup>
+
+```bash curl
+curl -X PUT https://api.crew.film/v1/users/usr_4kXmQ92bLp \
+  -H "Authorization: Bearer $CREW_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "bio": "Award-winning cinematographer with 10 years on indie features and commercials.",
+    "day_rate": 750,
+    "skills": ["Steadicam", "Drone", "Anamorphic", "Color Grading"],
+    "social_links": {
+      "instagram": "https://instagram.com/alexrivera.dp",
+      "vimeo": "https://vimeo.com/alexriveradp"
+    }
+  }'
+```
+
+```javascript JavaScript
+const userId = "usr_4kXmQ92bLp";
+
+const res = await fetch(`https://api.crew.film/v1/users/${userId}`, {
+  method: "PUT",
+  headers: {
+    Authorization: `Bearer ${process.env.CREW_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    bio: "Award-winning cinematographer with 10 years on indie features and commercials.",
+    day_rate: 750,
+    skills: ["Steadicam", "Drone", "Anamorphic", "Color Grading"],
+    social_links: {
+      instagram: "https://instagram.com/alexrivera.dp",
+      vimeo: "https://vimeo.com/alexriveradp",
+    },
+  }),
+});
+
+const updatedUser = await res.json();
+console.log(updatedUser);
+```
+
+```python Python
+import os
+import requests
+
+user_id = "usr_4kXmQ92bLp"
+
+payload = {
+    "bio": "Award-winning cinematographer with 10 years on indie features and commercials.",
+    "day_rate": 750,
+    "skills": ["Steadicam", "Drone", "Anamorphic", "Color Grading"],
+    "social_links": {
+        "instagram": "https://instagram.com/alexrivera.dp",
+        "vimeo": "https://vimeo.com/alexriveradp",
+    },
+}
+
+response = requests.put(
+    f"https://api.crew.film/v1/users/{user_id}",
+    headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
+    json=payload,
+)
+
+updated_user = response.json()
+print(updated_user)
+```
+
+</CodeGroup>

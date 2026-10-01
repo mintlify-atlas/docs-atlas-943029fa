@@ -1,0 +1,552 @@
+---
+title: "Opportunities API — Film Production Job Listings"
+sidebarTitle: "Opportunities"
+description: "REST API endpoints for browsing film production opportunity listings, retrieving role details, and posting new opportunities on CREW."
+---
+
+The Opportunities API is the job board layer of CREW, covering open production roles across films, TV series, commercials, music videos, documentaries, and more. Filmmakers post opportunities to find collaborators; crew members search and apply to join productions. All newly created opportunities default to `open` status and can be closed or marked as filled by the posting user at any time.
+
+<Card title="Authentication" icon="lock" href="/api/authentication">
+  Posting and updating opportunities requires a valid API key with the `write` scope. Browsing open listings is available to all authenticated users.
+</Card>
+
+---
+
+## GET /opportunities
+
+Search and filter all production opportunity listings. By default, only `open` opportunities are returned. Paginated results include a truncated description summary in the list view.
+
+<Tip>
+  Combine `shoot_from` and `shoot_to` with a `role` filter to surface opportunities that overlap with your availability window — ideal for building a personalised job feed for crew members.
+</Tip>
+
+### Query Parameters
+
+<ParamField query="q" type="string">
+  Full-text search query. Matched against title, role, description, and location.
+</ParamField>
+
+<ParamField query="production_type" type="string">
+  Filter by the type of production. One of: `film`, `tv`, `commercial`, `music_video`, `documentary`, `student`, `corporate`, `other`.
+</ParamField>
+
+<ParamField query="role" type="string">
+  Filter by the role being sought (e.g. `gaffer`, `1st AC`, `production designer`).
+</ParamField>
+
+<ParamField query="pay_type" type="string">
+  Filter by compensation type. One of: `paid`, `deferred`, `unpaid`, `tbd`.
+</ParamField>
+
+<ParamField query="location" type="string">
+  Filter by shoot city, region, or country (e.g. `Austin, TX`, `Scotland`).
+</ParamField>
+
+<ParamField query="shoot_from" type="date">
+  Filter opportunities whose shoot window starts on or after this date. Format: `YYYY-MM-DD`.
+</ParamField>
+
+<ParamField query="shoot_to" type="date">
+  Filter opportunities whose shoot window ends on or before this date. Format: `YYYY-MM-DD`.
+</ParamField>
+
+<ParamField query="status" type="string" default="open">
+  Filter by listing status. One of: `open`, `filled`, `closed`. Defaults to `open`.
+</ParamField>
+
+<ParamField query="page" type="integer" default="1">
+  Page number for paginated results.
+</ParamField>
+
+<ParamField query="per_page" type="integer" default="20">
+  Number of results per page. Maximum: `100`.
+</ParamField>
+
+### Response
+
+Returns an array of opportunity summary objects.
+
+<ResponseField name="id" type="string">
+  Unique identifier for the opportunity listing.
+</ResponseField>
+
+<ResponseField name="title" type="string">
+  Display title of the production or opportunity (e.g. `Gaffer needed — 5-day indie feature, Austin`).
+</ResponseField>
+
+<ResponseField name="production_type" type="string">
+  Type of production: `film`, `tv`, `commercial`, `music_video`, `documentary`, `student`, `corporate`, or `other`.
+</ResponseField>
+
+<ResponseField name="role" type="string">
+  The specific role being sought.
+</ResponseField>
+
+<ResponseField name="pay_type" type="string">
+  Compensation type: `paid`, `deferred`, `unpaid`, or `tbd`.
+</ResponseField>
+
+<ResponseField name="location" type="string">
+  Shoot city, region, or country.
+</ResponseField>
+
+<ResponseField name="shoot_dates" type="object">
+  The planned shoot window.
+
+  <Expandable title="Shoot dates object">
+    <ResponseField name="from" type="string">
+      First day of the shoot. Format: `YYYY-MM-DD`.
+    </ResponseField>
+    <ResponseField name="to" type="string">
+      Last day of the shoot. Format: `YYYY-MM-DD`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current status of the listing: `open`, `filled`, or `closed`.
+</ResponseField>
+
+<ResponseField name="posted_by" type="object">
+  The CREW member who posted the opportunity.
+
+  <Expandable title="Posted by object">
+    <ResponseField name="id" type="string">
+      Unique identifier of the posting user.
+    </ResponseField>
+    <ResponseField name="display_name" type="string">
+      The posting user's public display name.
+    </ResponseField>
+    <ResponseField name="profile_photo_url" type="string">
+      Absolute URL to the posting user's profile photo.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  ISO 8601 timestamp of when the listing was posted.
+</ResponseField>
+
+<ResponseField name="summary" type="string">
+  Truncated description for the list view. Retrieve the full text via `GET /opportunities/:id`.
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl -G https://api.crew.film/v1/opportunities \
+  -H "Authorization: Bearer $CREW_API_KEY" \
+  --data-urlencode "production_type=film" \
+  --data-urlencode "role=gaffer" \
+  --data-urlencode "pay_type=paid" \
+  --data-urlencode "location=Austin" \
+  --data-urlencode "shoot_from=2025-11-01" \
+  --data-urlencode "shoot_to=2025-11-30"
+```
+
+```javascript JavaScript
+const params = new URLSearchParams({
+  production_type: "film",
+  role: "gaffer",
+  pay_type: "paid",
+  location: "Austin",
+  shoot_from: "2025-11-01",
+  shoot_to: "2025-11-30",
+});
+
+const res = await fetch(`https://api.crew.film/v1/opportunities?${params}`, {
+  headers: {
+    Authorization: `Bearer ${process.env.CREW_API_KEY}`,
+  },
+});
+
+const { data } = await res.json();
+console.log(data);
+```
+
+```python Python
+import os
+import requests
+
+params = {
+    "production_type": "film",
+    "role": "gaffer",
+    "pay_type": "paid",
+    "location": "Austin",
+    "shoot_from": "2025-11-01",
+    "shoot_to": "2025-11-30",
+}
+
+response = requests.get(
+    "https://api.crew.film/v1/opportunities",
+    headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
+    params=params,
+)
+
+opportunities = response.json()["data"]
+print(opportunities)
+```
+
+</CodeGroup>
+
+---
+
+## GET /opportunities/:id
+
+Retrieve the full detail record for a single opportunity listing. Includes the complete description, requirements, compensation details, and — for the posting user only — the current application count.
+
+<Note>
+  The `application_count` field is **only visible to the user who posted the listing**. All other authenticated users receive `null` for this field.
+</Note>
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  The unique ID of the opportunity to retrieve.
+</ParamField>
+
+### Response
+
+<ResponseField name="id" type="string">
+  Unique identifier for the opportunity listing.
+</ResponseField>
+
+<ResponseField name="title" type="string">
+  Full display title of the opportunity.
+</ResponseField>
+
+<ResponseField name="production_type" type="string">
+  Type of production.
+</ResponseField>
+
+<ResponseField name="role" type="string">
+  The specific role being sought.
+</ResponseField>
+
+<ResponseField name="pay_type" type="string">
+  Compensation type: `paid`, `deferred`, `unpaid`, or `tbd`.
+</ResponseField>
+
+<ResponseField name="location" type="string">
+  Shoot city, region, or country.
+</ResponseField>
+
+<ResponseField name="shoot_dates" type="object">
+  The planned shoot window.
+
+  <Expandable title="Shoot dates object">
+    <ResponseField name="from" type="string">
+      First day of the shoot. Format: `YYYY-MM-DD`.
+    </ResponseField>
+    <ResponseField name="to" type="string">
+      Last day of the shoot. Format: `YYYY-MM-DD`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current status: `open`, `filled`, or `closed`.
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Full description of the opportunity, production, and what's expected from applicants.
+</ResponseField>
+
+<ResponseField name="requirements" type="string">
+  Specific requirements for the role (e.g. equipment ownership, experience level, travel availability). May be `null`.
+</ResponseField>
+
+<ResponseField name="compensation_details" type="string">
+  Further detail on pay, deferrals, profit participation, or other compensation. May be `null`.
+</ResponseField>
+
+<ResponseField name="application_count" type="integer">
+  Total number of applications received. **Visible only to the posting user.** Returns `null` for all others.
+</ResponseField>
+
+<ResponseField name="contact_name" type="string">
+  Name of the point of contact for the opportunity.
+</ResponseField>
+
+<ResponseField name="project" type="object">
+  The linked CREW project, if one has been associated with this opportunity.
+
+  <Expandable title="Project object">
+    <ResponseField name="id" type="string">
+      Unique identifier of the linked project.
+    </ResponseField>
+    <ResponseField name="title" type="string">
+      Title of the linked project.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="posted_by" type="object">
+  The CREW member who posted the opportunity.
+
+  <Expandable title="Posted by object">
+    <ResponseField name="id" type="string">
+      Unique identifier of the posting user.
+    </ResponseField>
+    <ResponseField name="display_name" type="string">
+      The posting user's public display name.
+    </ResponseField>
+    <ResponseField name="profile_photo_url" type="string">
+      Absolute URL to the posting user's profile photo.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  ISO 8601 timestamp of when the listing was posted.
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl https://api.crew.film/v1/opportunities/opp_6hDcN38xRt \
+  -H "Authorization: Bearer $CREW_API_KEY"
+```
+
+```javascript JavaScript
+const opportunityId = "opp_6hDcN38xRt";
+
+const res = await fetch(
+  `https://api.crew.film/v1/opportunities/${opportunityId}`,
+  {
+    headers: {
+      Authorization: `Bearer ${process.env.CREW_API_KEY}`,
+    },
+  }
+);
+
+const opportunity = await res.json();
+console.log(opportunity.description);
+console.log("Applications:", opportunity.application_count ?? "not visible");
+```
+
+```python Python
+import os
+import requests
+
+opportunity_id = "opp_6hDcN38xRt"
+
+response = requests.get(
+    f"https://api.crew.film/v1/opportunities/{opportunity_id}",
+    headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
+)
+
+opportunity = response.json()
+print(opportunity["description"])
+print("Applications:", opportunity.get("application_count", "not visible"))
+```
+
+</CodeGroup>
+
+---
+
+## POST /opportunities
+
+Post a new production opportunity listing. Newly created listings default to `open` status and are immediately visible in search results. Requires a valid API key with the `write` scope.
+
+<Warning>
+  Unpaid and deferred opportunities must accurately reflect the compensation type. Misrepresenting pay in listings may result in the listing being removed and the account being reviewed.
+</Warning>
+
+### Request Body
+
+<ParamField body="title" type="string" required>
+  A concise, descriptive title for the opportunity (e.g. `1st AD — 10-day Feature Film, New Orleans`).
+</ParamField>
+
+<ParamField body="production_type" type="string" required>
+  Type of production. One of: `film`, `tv`, `commercial`, `music_video`, `documentary`, `student`, `corporate`, `other`.
+</ParamField>
+
+<ParamField body="role" type="string" required>
+  The specific role or department position being sought.
+</ParamField>
+
+<ParamField body="pay_type" type="string" required>
+  Compensation type. One of: `paid`, `deferred`, `unpaid`, `tbd`.
+</ParamField>
+
+<ParamField body="description" type="string" required>
+  Full description of the production and what you're looking for in a collaborator.
+</ParamField>
+
+<ParamField body="location" type="string" required>
+  Shoot city, region, or country.
+</ParamField>
+
+<ParamField body="shoot_from" type="date" required>
+  First day of the planned shoot. Format: `YYYY-MM-DD`.
+</ParamField>
+
+<ParamField body="shoot_to" type="date" required>
+  Last day of the planned shoot. Format: `YYYY-MM-DD`.
+</ParamField>
+
+<ParamField body="compensation_details" type="string">
+  Optional detail on pay rate, deferred terms, or other compensation arrangements.
+</ParamField>
+
+<ParamField body="requirements" type="string">
+  Optional requirements for applicants, such as must own specific equipment or have a minimum number of credits.
+</ParamField>
+
+### Response
+
+Returns `201 Created` with the full created opportunity object.
+
+<CodeGroup>
+
+```bash curl
+curl -X POST https://api.crew.film/v1/opportunities \
+  -H "Authorization: Bearer $CREW_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Gaffer needed — 5-day Indie Feature, Austin TX",
+    "production_type": "film",
+    "role": "gaffer",
+    "pay_type": "paid",
+    "description": "We are shooting a low-budget indie feature in Austin over 5 days in November. Looking for an experienced gaffer comfortable working with a small crew. Director has two festival-selected shorts.",
+    "location": "Austin, TX",
+    "shoot_from": "2025-11-10",
+    "shoot_to": "2025-11-14",
+    "compensation_details": "$350/day flat rate. Meals provided on set.",
+    "requirements": "Must have own basic kit. References from prior narrative work preferred."
+  }'
+```
+
+```javascript JavaScript
+const res = await fetch("https://api.crew.film/v1/opportunities", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${process.env.CREW_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    title: "Gaffer needed — 5-day Indie Feature, Austin TX",
+    production_type: "film",
+    role: "gaffer",
+    pay_type: "paid",
+    description:
+      "We are shooting a low-budget indie feature in Austin over 5 days in November. Looking for an experienced gaffer comfortable working with a small crew.",
+    location: "Austin, TX",
+    shoot_from: "2025-11-10",
+    shoot_to: "2025-11-14",
+    compensation_details: "$350/day flat rate. Meals provided on set.",
+    requirements:
+      "Must have own basic kit. References from prior narrative work preferred.",
+  }),
+});
+
+const opportunity = await res.json();
+console.log("Posted opportunity:", opportunity.id);
+```
+
+```python Python
+import os
+import requests
+
+payload = {
+    "title": "Gaffer needed — 5-day Indie Feature, Austin TX",
+    "production_type": "film",
+    "role": "gaffer",
+    "pay_type": "paid",
+    "description": (
+        "We are shooting a low-budget indie feature in Austin over 5 days in November. "
+        "Looking for an experienced gaffer comfortable working with a small crew."
+    ),
+    "location": "Austin, TX",
+    "shoot_from": "2025-11-10",
+    "shoot_to": "2025-11-14",
+    "compensation_details": "$350/day flat rate. Meals provided on set.",
+    "requirements": "Must have own basic kit. References from prior narrative work preferred.",
+}
+
+response = requests.post(
+    "https://api.crew.film/v1/opportunities",
+    headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
+    json=payload,
+)
+
+opportunity = response.json()
+print("Posted opportunity:", opportunity["id"])
+```
+
+</CodeGroup>
+
+---
+
+## PATCH /opportunities/:id
+
+Update the status of an existing opportunity listing. Use this endpoint to mark a role as filled once you've found your collaborator, or to close a listing early. Only the user who posted the opportunity can update its status. Requires the `write` scope.
+
+<Note>
+  Once a listing is set to `filled` or `closed`, it will no longer appear in default search results (which filter by `status=open`). You can reopen a listing by setting the status back to `open`.
+</Note>
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  The unique ID of the opportunity to update.
+</ParamField>
+
+### Request Body
+
+<ParamField body="status" type="string" required>
+  New status for the listing. One of: `open`, `filled`, `closed`.
+</ParamField>
+
+### Response
+
+Returns `200 OK` with the updated opportunity object.
+
+<CodeGroup>
+
+```bash curl
+# Mark a listing as filled
+curl -X PATCH https://api.crew.film/v1/opportunities/opp_6hDcN38xRt \
+  -H "Authorization: Bearer $CREW_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"status": "filled"}'
+```
+
+```javascript JavaScript
+const opportunityId = "opp_6hDcN38xRt";
+
+const res = await fetch(
+  `https://api.crew.film/v1/opportunities/${opportunityId}`,
+  {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${process.env.CREW_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ status: "filled" }),
+  }
+);
+
+const updated = await res.json();
+console.log("Updated status:", updated.status);
+```
+
+```python Python
+import os
+import requests
+
+opportunity_id = "opp_6hDcN38xRt"
+
+response = requests.patch(
+    f"https://api.crew.film/v1/opportunities/{opportunity_id}",
+    headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
+    json={"status": "filled"},
+)
+
+updated = response.json()
+print("Updated status:", updated["status"])
+```
+
+</CodeGroup>

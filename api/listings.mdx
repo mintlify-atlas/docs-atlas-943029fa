@@ -1,0 +1,289 @@
+---
+title: "Listings API — Browse All Production Resources"
+sidebarTitle: "Listings"
+description: "The CREW listings endpoint returns a unified feed of crew, location, equipment, and opportunity listings — useful for building search interfaces or aggregated dashboards."
+---
+
+The Listings API provides a single unified endpoint that aggregates crew profiles, filming locations, equipment rentals, and production opportunities into one searchable feed. It is the fastest way to build a cross-category search experience or a general-purpose discovery dashboard without having to fan out requests to multiple endpoints.
+
+<Tip>
+  The `/listings` endpoint is optimised for broad discovery. If you need full field detail or category-specific filters, use the dedicated endpoints: [/locations](/api/locations), [/equipment](/api/equipment), and [/opportunities](/api/opportunities).
+</Tip>
+
+---
+
+## GET /listings
+
+Search across all listing types at once. Results include crew profiles, filming locations, equipment rentals, and production opportunities in a single paginated feed. Each result carries a `type` field so your UI can render each card appropriately.
+
+### Query Parameters
+
+<ParamField query="q" type="string">
+  Full-text search query. Matched against titles, summaries, roles, and tags across all listing types.
+</ParamField>
+
+<ParamField query="type" type="string">
+  Filter results to a single listing category. One of: `crew`, `location`, `equipment`, `opportunity`. Omit to return all types.
+</ParamField>
+
+<ParamField query="location" type="string">
+  Filter by city, region, or country string (e.g. `New York`, `Canada`).
+</ParamField>
+
+<ParamField query="page" type="integer" default="1">
+  Page number for paginated results.
+</ParamField>
+
+<ParamField query="per_page" type="integer" default="20">
+  Number of results per page. Maximum: `100`.
+</ParamField>
+
+### Response
+
+Returns an array of listing summary objects. The `type` field identifies the category; refer to the type-specific endpoint documentation for the full field set on each record.
+
+<ResponseField name="id" type="string">
+  Unique identifier for the listing.
+</ResponseField>
+
+<ResponseField name="type" type="string">
+  Category of the listing. One of: `crew`, `location`, `equipment`, `opportunity`.
+</ResponseField>
+
+<ResponseField name="title" type="string">
+  Display title of the listing. For crew listings this is the user's display name and primary role.
+</ResponseField>
+
+<ResponseField name="summary" type="string">
+  Short description or bio, truncated for the feed view. Retrieve the full listing via `GET /listings/:id` for the complete text.
+</ResponseField>
+
+<ResponseField name="owner" type="object">
+  The CREW member who owns or posted the listing.
+
+  <Expandable title="Owner object">
+    <ResponseField name="id" type="string">
+      Unique identifier of the owner.
+    </ResponseField>
+    <ResponseField name="display_name" type="string">
+      The owner's public display name.
+    </ResponseField>
+    <ResponseField name="profile_photo_url" type="string">
+      Absolute URL to the owner's profile photo.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="location" type="string">
+  City or region associated with the listing.
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  ISO 8601 timestamp of when the listing was created.
+</ResponseField>
+
+<ResponseField name="updated_at" type="string">
+  ISO 8601 timestamp of the last update to the listing.
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+# Search all listing types for "sound mixer" in Atlanta
+curl -G https://api.crew.film/v1/listings \
+  -H "Authorization: Bearer $CREW_API_KEY" \
+  --data-urlencode "q=sound mixer" \
+  --data-urlencode "location=Atlanta" \
+  --data-urlencode "per_page=30"
+```
+
+```javascript JavaScript
+const params = new URLSearchParams({
+  q: "sound mixer",
+  location: "Atlanta",
+  per_page: 30,
+});
+
+const res = await fetch(`https://api.crew.film/v1/listings?${params}`, {
+  headers: {
+    Authorization: `Bearer ${process.env.CREW_API_KEY}`,
+  },
+});
+
+const { data } = await res.json();
+
+// Group results by type for a multi-section UI
+const grouped = data.reduce((acc, item) => {
+  (acc[item.type] ||= []).push(item);
+  return acc;
+}, {});
+
+console.log(grouped);
+```
+
+```python Python
+import os
+import requests
+
+params = {
+    "q": "sound mixer",
+    "location": "Atlanta",
+    "per_page": 30,
+}
+
+response = requests.get(
+    "https://api.crew.film/v1/listings",
+    headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
+    params=params,
+)
+
+listings = response.json()["data"]
+
+# Group by type
+from collections import defaultdict
+grouped = defaultdict(list)
+for item in listings:
+    grouped[item["type"]].append(item)
+
+print(dict(grouped))
+```
+
+</CodeGroup>
+
+---
+
+## GET /listings/:id
+
+Retrieve the full detail record for any single listing by its ID, regardless of type. The response structure mirrors the type-specific endpoint for that listing category.
+
+<Note>
+  The fields returned depend on the `type` of the listing. For the complete field reference, see the dedicated documentation pages:
+  - Crew profiles → [GET /users/:id](/api/users)
+  - Filming locations → [GET /locations/:id](/api/locations)
+  - Equipment rentals → [GET /equipment/:id](/api/equipment)
+  - Production opportunities → [GET /opportunities/:id](/api/opportunities)
+</Note>
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  The unique ID of the listing to retrieve.
+</ParamField>
+
+### Response
+
+Returns the full listing object. The `type` field is always present so you can branch your rendering logic accordingly. All other fields match the relevant type-specific endpoint.
+
+<ResponseField name="id" type="string">
+  Unique identifier for the listing.
+</ResponseField>
+
+<ResponseField name="type" type="string">
+  Category of the listing: `crew`, `location`, `equipment`, or `opportunity`.
+</ResponseField>
+
+<ResponseField name="title" type="string">
+  Full title of the listing.
+</ResponseField>
+
+<ResponseField name="owner" type="object">
+  The CREW member who owns or posted the listing.
+
+  <Expandable title="Owner object">
+    <ResponseField name="id" type="string">
+      Unique identifier of the owner.
+    </ResponseField>
+    <ResponseField name="display_name" type="string">
+      The owner's public display name.
+    </ResponseField>
+    <ResponseField name="profile_photo_url" type="string">
+      Absolute URL to the owner's profile photo.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="location" type="string">
+  City or region associated with the listing.
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  ISO 8601 timestamp of when the listing was created.
+</ResponseField>
+
+<ResponseField name="updated_at" type="string">
+  ISO 8601 timestamp of the last update to the listing.
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl https://api.crew.film/v1/listings/lst_7nRpT03wKc \
+  -H "Authorization: Bearer $CREW_API_KEY"
+```
+
+```javascript JavaScript
+const listingId = "lst_7nRpT03wKc";
+
+const res = await fetch(`https://api.crew.film/v1/listings/${listingId}`, {
+  headers: {
+    Authorization: `Bearer ${process.env.CREW_API_KEY}`,
+  },
+});
+
+const listing = await res.json();
+
+// Branch on type to render the correct detail view
+switch (listing.type) {
+  case "crew":
+    renderCrewProfile(listing);
+    break;
+  case "location":
+    renderLocationDetail(listing);
+    break;
+  case "equipment":
+    renderEquipmentDetail(listing);
+    break;
+  case "opportunity":
+    renderOpportunityDetail(listing);
+    break;
+}
+```
+
+```python Python
+import os
+import requests
+
+listing_id = "lst_7nRpT03wKc"
+
+response = requests.get(
+    f"https://api.crew.film/v1/listings/{listing_id}",
+    headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
+)
+
+listing = response.json()
+print(f"Type: {listing['type']}")
+print(f"Title: {listing['title']}")
+```
+
+</CodeGroup>
+
+---
+
+## Type-Specific Endpoints
+
+For advanced filtering, complete field access, and create/update operations, use the dedicated category endpoints.
+
+<CardGroup cols={2}>
+  <Card title="Locations" icon="map-pin" href="/api/locations">
+    Filter by location type, amenities, capacity, and availability. Create and manage filming location listings.
+  </Card>
+  <Card title="Equipment" icon="camera" href="/api/equipment">
+    Filter by gear category, brand, condition, and delivery availability. List film equipment for rent.
+  </Card>
+  <Card title="Opportunities" icon="briefcase" href="/api/opportunities">
+    Filter by production type, pay type, and shoot dates. Post and manage production job listings.
+  </Card>
+  <Card title="Users" icon="user" href="/api/users">
+    Filter crew by role, skills, availability, and rate. Create and update filmmaker and crew accounts.
+  </Card>
+</CardGroup>

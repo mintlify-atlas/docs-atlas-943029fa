@@ -1,0 +1,117 @@
+---
+title: "Core Concepts: How CREW Works"
+sidebarTitle: "Core Concepts"
+description: "Understand CREW's key building blocks — profiles, listings, the discovery engine, messaging, and the reputation system — and how they fit together."
+---
+
+CREW is built around a simple mental model: every person is a **Profile**, everything they offer or seek is a **Listing**, and the platform's job is to surface the right matches through **Search**, facilitate conversations via **Messaging**, and build lasting trust through a transparent **Reputation** system. Understanding how these pieces fit together will help you get the most out of every feature CREW offers.
+
+<AccordionGroup>
+  <Accordion title="Profiles" icon="circle-user">
+    Every CREW user — whether a filmmaker, crew member, location owner, or equipment owner — has a profile that serves as their public identity on the platform.
+
+    A profile contains:
+
+    - **Display name and photo** — the first thing other users see in search results and messages.
+    - **Role(s)** — one or more roles (Filmmaker, Crew Member, Location Owner, Equipment Owner) that determine which listing types the user can create and which searches surface them.
+    - **Skills & credits** — for crew members, a structured list of skills (e.g., Color Grading, Boom Operation) and notable production credits.
+    - **Availability** — a calendar that crew members and equipment owners can update to signal when they're open for bookings.
+    - **Portfolio links** — external links to IMDb pages, personal websites, reels, or Vimeo/YouTube showreels.
+    - **Reviews** — a public, verified record of past collaborations (see *Reviews & Reputation* below).
+
+    Profiles are indexed by the search engine and are discoverable by anyone on the platform.
+  </Accordion>
+
+  <Accordion title="Listings" icon="list">
+    A listing is anything posted to CREW that others can discover, save, or respond to. There are four listing types:
+
+    | Type | Created by | Purpose |
+    |------|-----------|---------|
+    | **Crew Availability** | Crew Members | Signal availability for hire during a date range |
+    | **Location** | Location Owners | Offer a property or venue for film use |
+    | **Equipment** | Equipment Owners | Rent out gear to nearby productions |
+    | **Opportunity** | Filmmakers & Producers | Post an open role or call for applications |
+
+    All listing types share a common set of fields — title, description, location, and date range — and then include type-specific fields (e.g., day rate for Crew Availability, rental price for Equipment). Every listing is publicly discoverable via search unless the creator sets its visibility to **Private**.
+  </Accordion>
+
+  <Accordion title="Search & Filters" icon="magnifying-glass">
+    CREW's discovery engine combines full-text search with faceted filtering so you can find exactly what — or who — you need.
+
+    **Full-text search** indexes profile bios, skills, listing titles, and descriptions. You can search natural-language queries like `"underwater cinematographer Miami"` or `"vintage 35mm anamorphic lens"`.
+
+    **Faceted filters** let you narrow results by:
+
+    - **Role** — limit results to a specific crew department or listing type.
+    - **Location** — radius-based filtering from a city, zip code, or map pin.
+    - **Date range** — show only profiles or listings available during your shoot window.
+    - **Price / day rate** — set a maximum budget for crew or equipment.
+    - **Skills** — filter crew members by one or more specific skills.
+    - **Rating** — show only profiles with a minimum average review score.
+
+    Results are ranked by a combination of profile completeness, relevance to the query, and recency of activity.
+  </Accordion>
+
+  <Accordion title="Messaging" icon="message">
+    CREW's direct messaging system lets any two users communicate without sharing personal contact details until both parties are comfortable doing so.
+
+    Key characteristics of the messaging system:
+
+    - **Context-aware threads** — every conversation is optionally linked to a specific listing or Project, keeping your inbox organized by production.
+    - **Message requests** — your first message to a new user lands as a *request* in their inbox. They can accept or decline before a full thread opens.
+    - **No cold-contact spam** — users can configure their messaging preferences to accept requests only from verified profiles or users with a minimum reputation score.
+    - **File sharing** — attach PDFs (call sheets, contracts, NDAs) and images directly in a message thread.
+
+    <Warning>
+      Never share sensitive financial information (bank details, payment card numbers) through CREW Messaging. Use a dedicated payment or contract platform for formal agreements.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="Reviews & Reputation" icon="star">
+    CREW's reputation system creates accountability and helps everyone make informed decisions.
+
+    **How reviews work:**
+
+    1. After a collaboration is marked as complete by either party, both users receive a prompt to leave a review.
+    2. Each review consists of a **star rating (1–5)** and an optional **written comment**.
+    3. Reviews are **public** — visible on the subject's profile to all logged-in users.
+    4. Reviews are **verified** — CREW confirms that a messaging thread or project connection existed between reviewer and subject before publishing the review.
+
+    A user's **Reputation Score** is a weighted average of their received star ratings, displayed prominently on their profile and in search results. High-reputation profiles are eligible for a **Verified** badge, which appears in search result cards and messaging.
+
+    <Info>
+      You cannot edit a review once it is published. If you believe a review violates CREW's community guidelines, use the **Report** button on the review to flag it for moderation.
+    </Info>
+  </Accordion>
+
+  <Accordion title="Projects" icon="folder-open">
+    A Project is a private workspace that filmmakers and producers use to organize everything associated with a specific production.
+
+    Within a Project you can:
+
+    - **Bookmark profiles and listings** — save crew members, locations, and equipment you're considering, grouped under a single production name.
+    - **Track status** — move bookmarks through stages: *Considering → Contacted → Confirmed → Wrapped*.
+    - **Invite collaborators** — share a Project with a co-producer or line producer so your whole team works from the same list.
+    - **Attach notes** — add private notes to any bookmarked item (e.g., availability caveats, rate negotiations).
+    - **Link message threads** — conversations started from within a Project are automatically filed under that Project in your inbox.
+
+    Projects are entirely private by default. Only users you explicitly invite can view or edit a Project.
+  </Accordion>
+</AccordionGroup>
+
+## Explore the features
+
+<CardGroup cols={2}>
+  <Card title="Crew Discovery" icon="users" href="/features/crew-discovery">
+    Deep-dive into search ranking, availability calendars, and how to build a crew roster for your production.
+  </Card>
+  <Card title="Locations" icon="map" href="/features/locations">
+    Learn how to list a location, understand permit requirements, and save locations to a Project.
+  </Card>
+  <Card title="Equipment" icon="camera" href="/features/equipment">
+    Browse the equipment marketplace, understand rental terms, and list your own gear for rent.
+  </Card>
+  <Card title="Opportunities" icon="briefcase" href="/features/opportunities">
+    Post a production opportunity, manage your applicant pipeline, and find open roles to apply to.
+  </Card>
+</CardGroup>

@@ -1,0 +1,91 @@
+---
+title: "Build a Filmmaker Profile That Attracts Top Crew"
+sidebarTitle: "Filmmaker Profile"
+description: "Your CREW filmmaker profile is your production company's public face — showcase your projects, credits, and production style to attract the right collaborators."
+---
+
+Your filmmaker profile is the first thing crew members see when they consider working with you. A complete, well-crafted profile signals professionalism, sets clear expectations about your production style, and helps the right collaborators find their way to your projects. Whether you're an independent director scouting your next short or a production company staffing a feature, investing time in your profile pays off in the quality of the crew who reach out.
+
+## Profile Fields
+
+<ParamField path="display_name" type="string" required>
+  Your full name or production company name as it will appear publicly on CREW. Use the name people in the industry already know you by.
+</ParamField>
+
+<ParamField path="profile_photo" type="image" required>
+  A headshot or company logo. Minimum dimensions are **400 × 400 px**; accepted formats are JPG and PNG. Square crops work best — CREW automatically centres and rounds the image in listings and search results.
+</ParamField>
+
+<ParamField path="bio" type="string" required>
+  A short description of your production style, preferred genres, and what you look for in collaborators. Maximum **500 characters**. Write in the first person and be specific — mention the tone of your work, recurring themes, or the kind of sets you run.
+</ParamField>
+
+<ParamField path="location" type="string" required>
+  Your primary working city and country (for example, *Austin, United States* or *Toronto, Canada*). This drives local search results and helps crew gauge whether they can feasibly join your productions.
+</ParamField>
+
+<ParamField path="website_url" type="url">
+  A link to your personal website, portfolio, or production company site. Optional, but strongly recommended for productions with a back-catalogue to showcase.
+</ParamField>
+
+<ParamField path="production_types" type="array" required>
+  The categories that best describe your work. Select all that apply from the following options:
+
+  - Film
+  - TV
+  - Commercial
+  - Music Video
+  - Documentary
+  - Student
+  - Corporate
+</ParamField>
+
+<ParamField path="past_credits" type="array">
+  Individual credit entries, each containing a **project title**, **year**, and **your role** on that production. You can add up to **20 credits**. Credits are displayed chronologically on your public profile and feed into CREW's Verified Credits programme.
+</ParamField>
+
+<ParamField path="imdb_link" type="url">
+  A direct link to your IMDb page. When provided, CREW displays a verified IMDb badge next to your name so crew can cross-reference your credits independently.
+</ParamField>
+
+<ParamField path="social_links" type="object">
+  Optional links to your social and portfolio channels. Supported platforms are **Instagram**, **Vimeo**, and **YouTube**. Links open in a new tab from your public profile.
+</ParamField>
+
+<ParamField path="availability_status" type="enum">
+  Indicates whether you are actively looking to hire. Choose one of:
+
+  - **Currently Hiring** — your profile appears in "Actively Hiring" filtered searches and crew receive a hiring indicator on your card.
+  - **Not Hiring** — your profile remains publicly visible and searchable, but the hiring indicator is hidden.
+</ParamField>
+
+## Visibility
+
+Filmmaker profiles on CREW are **publicly visible** and indexed for both CREW's internal search engine and external search engines. Any visitor — logged-in or not — can view your display name, bio, production types, past credits, and social links. Your email address is never shown publicly; all contact is routed through CREW's messaging system.
+
+<Tip>
+  Keep your **Availability Status** up to date. Crew members filter searches by hiring status, and an outdated "Currently Hiring" flag can lead to inquiries that don't align with your actual timeline — while "Not Hiring" when you are actively staffing means you'll miss out on great candidates reaching out proactively.
+</Tip>
+
+<Note>
+  Profiles with at least **3 past credits** entered receive a **"Verified Credits"** badge displayed prominently on the public profile card. This badge increases trust with crew candidates and improves your ranking in CREW's search results.
+</Note>
+
+---
+
+<CardGroup cols={2}>
+  <Card
+    title="Crew Profile"
+    icon="user-tie"
+    href="/profiles/crew-profile"
+  >
+    Learn how crew members build their own profiles and what filmmakers see when they browse talent on CREW.
+  </Card>
+  <Card
+    title="Project Listings"
+    icon="clapperboard"
+    href="/collaboration/project-listings"
+  >
+    Post a project listing to broadcast your open roles to the entire CREW talent network.
+  </Card>
+</CardGroup>

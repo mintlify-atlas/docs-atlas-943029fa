@@ -1,0 +1,483 @@
+---
+title: "Locations API — Filming Location Listings"
+sidebarTitle: "Locations"
+description: "REST API endpoints for searching filming locations, retrieving location details, and creating or updating location listings on CREW."
+---
+
+The Locations API lets you search, retrieve, and publish filming location listings on CREW. Whether you're a filmmaker hunting for the perfect soundstage or a location owner looking to make your space available for productions, this API covers the full lifecycle of a location listing. Sensitive details such as street addresses and pickup instructions are protected and only surfaced after a booking is confirmed.
+
+<Card title="Authentication" icon="lock" href="/api/authentication">
+  Creating and updating location listings requires a valid API key with the `write` scope.
+</Card>
+
+---
+
+## GET /locations
+
+Search and filter all filming location listings. Results are paginated and each location object in the list view includes the first three photos.
+
+<Tip>
+  Use `amenities` to narrow results to spaces with specific on-set requirements, such as `power` for high-draw lighting rigs or `parking` for large crew vehicles. Multiple values are comma-separated.
+</Tip>
+
+### Query Parameters
+
+<ParamField query="q" type="string">
+  Full-text search query. Matched against title, description, and city.
+</ParamField>
+
+<ParamField query="city" type="string">
+  Filter by city name (e.g. `Chicago`, `London`).
+</ParamField>
+
+<ParamField query="type" type="string">
+  Filter by location type. One of: `indoor`, `outdoor`, `studio`, `soundstage`, `practical`.
+</ParamField>
+
+<ParamField query="rate_max" type="integer">
+  Maximum acceptable daily rate in the account's billing currency.
+</ParamField>
+
+<ParamField query="capacity_min" type="integer">
+  Minimum crew capacity — the maximum number of people the location can accommodate.
+</ParamField>
+
+<ParamField query="amenities" type="string">
+  Comma-separated list of required amenities. Accepted values: `parking`, `restrooms`, `kitchen`, `power`, `wifi`. Only locations that include **all** listed amenities are returned.
+</ParamField>
+
+<ParamField query="available_from" type="date">
+  Start of the required availability window. Format: `YYYY-MM-DD`.
+</ParamField>
+
+<ParamField query="available_to" type="date">
+  End of the required availability window. Format: `YYYY-MM-DD`.
+</ParamField>
+
+<ParamField query="page" type="integer" default="1">
+  Page number for paginated results.
+</ParamField>
+
+<ParamField query="per_page" type="integer" default="20">
+  Number of results per page. Maximum: `100`.
+</ParamField>
+
+### Response
+
+Returns an array of location summary objects.
+
+<ResponseField name="id" type="string">
+  Unique identifier for the location listing.
+</ResponseField>
+
+<ResponseField name="title" type="string">
+  Display title of the location listing.
+</ResponseField>
+
+<ResponseField name="location_type" type="string">
+  Category of the location: `indoor`, `outdoor`, `studio`, `soundstage`, or `practical`.
+</ResponseField>
+
+<ResponseField name="city" type="string">
+  City where the location is situated.
+</ResponseField>
+
+<ResponseField name="country" type="string">
+  Country where the location is situated.
+</ResponseField>
+
+<ResponseField name="daily_rate" type="integer">
+  Daily hire rate in the owner's billing currency.
+</ResponseField>
+
+<ResponseField name="capacity" type="integer">
+  Maximum crew size the location can accommodate.
+</ResponseField>
+
+<ResponseField name="amenities" type="array">
+  List of available amenities (e.g. `["parking", "power", "restrooms"]`).
+</ResponseField>
+
+<ResponseField name="photo_urls" type="array">
+  Array of absolute URLs for the first three listing photos. Retrieve the full photo set via `GET /locations/:id`.
+</ResponseField>
+
+<ResponseField name="owner" type="object">
+  The CREW member who listed the location.
+
+  <Expandable title="Owner object">
+    <ResponseField name="id" type="string">
+      Unique identifier of the owner.
+    </ResponseField>
+    <ResponseField name="display_name" type="string">
+      The owner's public display name.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="average_rating" type="float">
+  Mean rating from bookings. Range: `0.0` – `5.0`.
+</ResponseField>
+
+<ResponseField name="permits_required" type="boolean">
+  Whether filming permits are required to shoot at this location.
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl -G https://api.crew.film/v1/locations \
+  -H "Authorization: Bearer $CREW_API_KEY" \
+  --data-urlencode "city=New York" \
+  --data-urlencode "type=practical" \
+  --data-urlencode "amenities=parking,power" \
+  --data-urlencode "available_from=2025-09-10" \
+  --data-urlencode "available_to=2025-09-14" \
+  --data-urlencode "rate_max=1500"
+```
+
+```javascript JavaScript
+const params = new URLSearchParams({
+  city: "New York",
+  type: "practical",
+  amenities: "parking,power",
+  available_from: "2025-09-10",
+  available_to: "2025-09-14",
+  rate_max: 1500,
+});
+
+const res = await fetch(`https://api.crew.film/v1/locations?${params}`, {
+  headers: {
+    Authorization: `Bearer ${process.env.CREW_API_KEY}`,
+  },
+});
+
+const { data } = await res.json();
+console.log(data);
+```
+
+```python Python
+import os
+import requests
+
+params = {
+    "city": "New York",
+    "type": "practical",
+    "amenities": "parking,power",
+    "available_from": "2025-09-10",
+    "available_to": "2025-09-14",
+    "rate_max": 1500,
+}
+
+response = requests.get(
+    "https://api.crew.film/v1/locations",
+    headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
+    params=params,
+)
+
+locations = response.json()["data"]
+print(locations)
+```
+
+</CodeGroup>
+
+---
+
+## GET /locations/:id
+
+Retrieve the full detail record for a single location listing. All fields from the list view are included, plus the complete photo set, full description, availability calendar, and rate breakdown. Sensitive fields — the street address and pickup instructions — are only returned after a booking for this location has been confirmed.
+
+<Warning>
+  The `address` and `pickup_instructions` fields are **redacted** until a booking is confirmed. Do not display placeholder values to end users; check for the presence of these fields before rendering them.
+</Warning>
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  The unique ID of the location listing to retrieve.
+</ParamField>
+
+### Response
+
+<ResponseField name="id" type="string">
+  Unique identifier for the location listing.
+</ResponseField>
+
+<ResponseField name="title" type="string">
+  Display title of the location listing.
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Full description of the location, its features, and any usage rules.
+</ResponseField>
+
+<ResponseField name="location_type" type="string">
+  Category of the location: `indoor`, `outdoor`, `studio`, `soundstage`, or `practical`.
+</ResponseField>
+
+<ResponseField name="city" type="string">
+  City where the location is situated.
+</ResponseField>
+
+<ResponseField name="country" type="string">
+  Country where the location is situated.
+</ResponseField>
+
+<ResponseField name="daily_rate" type="integer">
+  Daily hire rate in the owner's billing currency.
+</ResponseField>
+
+<ResponseField name="half_day_rate" type="integer">
+  Half-day hire rate. May be `null` if the owner has not set one.
+</ResponseField>
+
+<ResponseField name="capacity" type="integer">
+  Maximum crew size the location can accommodate.
+</ResponseField>
+
+<ResponseField name="amenities" type="array">
+  Full list of available amenities.
+</ResponseField>
+
+<ResponseField name="full_photo_urls" type="array">
+  Array of absolute URLs for all listing photos.
+</ResponseField>
+
+<ResponseField name="availability" type="array">
+  Array of available date ranges.
+
+  <Expandable title="Availability range object">
+    <ResponseField name="from" type="string">
+      Start date of an available window. Format: `YYYY-MM-DD`.
+    </ResponseField>
+    <ResponseField name="to" type="string">
+      End date of an available window. Format: `YYYY-MM-DD`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="permits_required" type="boolean">
+  Whether filming permits are required.
+</ResponseField>
+
+<ResponseField name="owner" type="object">
+  The CREW member who listed the location.
+
+  <Expandable title="Owner object">
+    <ResponseField name="id" type="string">
+      Unique identifier of the owner.
+    </ResponseField>
+    <ResponseField name="display_name" type="string">
+      The owner's public display name.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="average_rating" type="float">
+  Mean rating from confirmed bookings. Range: `0.0` – `5.0`.
+</ResponseField>
+
+<ResponseField name="pickup_instructions" type="string">
+  Access and arrival instructions. **Only present after a booking is confirmed.**
+</ResponseField>
+
+<ResponseField name="address" type="string">
+  Full street address of the location. **Only present after a booking is confirmed.**
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl https://api.crew.film/v1/locations/loc_9pBzW17vJq \
+  -H "Authorization: Bearer $CREW_API_KEY"
+```
+
+```javascript JavaScript
+const locationId = "loc_9pBzW17vJq";
+
+const res = await fetch(`https://api.crew.film/v1/locations/${locationId}`, {
+  headers: {
+    Authorization: `Bearer ${process.env.CREW_API_KEY}`,
+  },
+});
+
+const location = await res.json();
+
+// Address is only present after a confirmed booking
+if (location.address) {
+  console.log("Shoot address:", location.address);
+} else {
+  console.log("Address available after booking confirmation.");
+}
+```
+
+```python Python
+import os
+import requests
+
+location_id = "loc_9pBzW17vJq"
+
+response = requests.get(
+    f"https://api.crew.film/v1/locations/{location_id}",
+    headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
+)
+
+location = response.json()
+
+# Address is only present after a confirmed booking
+if location.get("address"):
+    print("Shoot address:", location["address"])
+else:
+    print("Address available after booking confirmation.")
+```
+
+</CodeGroup>
+
+---
+
+## POST /locations
+
+Create a new filming location listing. At least one photo is required. The listing will be immediately searchable once created. Requires a valid API key with the `write` scope.
+
+### Request Body
+
+<ParamField body="title" type="string" required>
+  A short, descriptive title for the location (e.g. `Converted Warehouse Loft, Brooklyn`).
+</ParamField>
+
+<ParamField body="description" type="string" required>
+  Full description of the space, its features, rules, and what makes it suitable for filming.
+</ParamField>
+
+<ParamField body="location_type" type="string" required>
+  Category of the location. One of: `indoor`, `outdoor`, `studio`, `soundstage`, `practical`.
+</ParamField>
+
+<ParamField body="city" type="string" required>
+  City where the location is situated.
+</ParamField>
+
+<ParamField body="country" type="string" required>
+  Country where the location is situated.
+</ParamField>
+
+<ParamField body="daily_rate" type="integer" required>
+  Daily hire rate in your account's billing currency.
+</ParamField>
+
+<ParamField body="half_day_rate" type="integer">
+  Optional half-day rate. Must be less than `daily_rate`.
+</ParamField>
+
+<ParamField body="capacity" type="integer">
+  Maximum number of people (crew + talent) the space can accommodate.
+</ParamField>
+
+<ParamField body="amenities" type="array">
+  List of available amenities. Accepted values: `parking`, `restrooms`, `kitchen`, `power`, `wifi`.
+</ParamField>
+
+<ParamField body="permits_required" type="boolean">
+  Whether production permits are required to film at this location. Defaults to `false`.
+</ParamField>
+
+<ParamField body="photo_urls" type="array" required>
+  Array of publicly accessible photo URLs. Minimum: **1 photo**. CREW recommends at least 5 for better discoverability.
+</ParamField>
+
+### Response
+
+Returns `201 Created` with the full created location object.
+
+<CodeGroup>
+
+```bash curl
+curl -X POST https://api.crew.film/v1/locations \
+  -H "Authorization: Bearer $CREW_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Converted Warehouse Loft, Brooklyn",
+    "description": "5,000 sq ft industrial loft with exposed brick, floor-to-ceiling windows, and a fully equipped kitchen. 14ft ceilings. Available 7 days a week.",
+    "location_type": "practical",
+    "city": "Brooklyn",
+    "country": "US",
+    "daily_rate": 1200,
+    "half_day_rate": 700,
+    "capacity": 40,
+    "amenities": ["parking", "restrooms", "kitchen", "power", "wifi"],
+    "permits_required": false,
+    "photo_urls": [
+      "https://cdn.example.com/loft-01.jpg",
+      "https://cdn.example.com/loft-02.jpg",
+      "https://cdn.example.com/loft-03.jpg"
+    ]
+  }'
+```
+
+```javascript JavaScript
+const res = await fetch("https://api.crew.film/v1/locations", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${process.env.CREW_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    title: "Converted Warehouse Loft, Brooklyn",
+    description:
+      "5,000 sq ft industrial loft with exposed brick, floor-to-ceiling windows, and a fully equipped kitchen. 14ft ceilings. Available 7 days a week.",
+    location_type: "practical",
+    city: "Brooklyn",
+    country: "US",
+    daily_rate: 1200,
+    half_day_rate: 700,
+    capacity: 40,
+    amenities: ["parking", "restrooms", "kitchen", "power", "wifi"],
+    permits_required: false,
+    photo_urls: [
+      "https://cdn.example.com/loft-01.jpg",
+      "https://cdn.example.com/loft-02.jpg",
+      "https://cdn.example.com/loft-03.jpg",
+    ],
+  }),
+});
+
+const location = await res.json();
+console.log("Created location:", location.id);
+```
+
+```python Python
+import os
+import requests
+
+payload = {
+    "title": "Converted Warehouse Loft, Brooklyn",
+    "description": (
+        "5,000 sq ft industrial loft with exposed brick, floor-to-ceiling windows, "
+        "and a fully equipped kitchen. 14ft ceilings. Available 7 days a week."
+    ),
+    "location_type": "practical",
+    "city": "Brooklyn",
+    "country": "US",
+    "daily_rate": 1200,
+    "half_day_rate": 700,
+    "capacity": 40,
+    "amenities": ["parking", "restrooms", "kitchen", "power", "wifi"],
+    "permits_required": False,
+    "photo_urls": [
+        "https://cdn.example.com/loft-01.jpg",
+        "https://cdn.example.com/loft-02.jpg",
+        "https://cdn.example.com/loft-03.jpg",
+    ],
+}
+
+response = requests.post(
+    "https://api.crew.film/v1/locations",
+    headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
+    json=payload,
+)
+
+location = response.json()
+print("Created location:", location["id"])
+```
+
+</CodeGroup>

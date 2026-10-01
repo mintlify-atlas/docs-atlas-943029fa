@@ -1,0 +1,120 @@
+---
+title: "Create a Crew Profile to Get Found by Filmmakers"
+sidebarTitle: "Crew Profile"
+description: "A complete CREW member profile helps filmmakers discover you — add your skills, reel, availability, and rate card so the right productions can reach out."
+---
+
+Your CREW profile is your professional calling card in front of thousands of filmmakers actively staffing their productions. When a director or producer searches for a specific role — say, a gaffer available in Chicago next month — CREW's search surfaces crew profiles that match their criteria. The more complete and current your profile, the higher you appear in results and the more likely a filmmaker is to send that first message. Think of it as a living CV that works for you around the clock.
+
+## Profile Fields
+
+<ParamField path="display_name" type="string" required>
+  Your full name as you want to be credited and contacted professionally. This is the name that appears in search results, on project rosters, and in filmmaker inboxes.
+</ParamField>
+
+<ParamField path="profile_photo" type="image" required>
+  A professional headshot or on-set photo. Minimum dimensions are **400 × 400 px**; accepted formats are JPG and PNG. A clear, well-lit photo makes your profile significantly more clickable in search results.
+</ParamField>
+
+<ParamField path="primary_role" type="string" required>
+  The single role you are most known for and want to be hired for — for example, *Director of Photography*, *Production Sound Mixer*, or *Costume Designer*. This drives your placement in role-specific searches and appears as the headline beneath your name.
+</ParamField>
+
+<ParamField path="additional_roles" type="array">
+  Secondary roles you are qualified and willing to fill. Select all that apply from the full CREW role taxonomy. These roles make you discoverable in additional searches without diluting your primary positioning.
+</ParamField>
+
+<ParamField path="bio" type="string" required>
+  A first-person summary of your experience, approach, and the kinds of productions you gravitate toward. Maximum **500 characters**. Specific details — camera systems you favour, genres you specialise in, production scales you've worked at — outperform generic descriptions every time.
+</ParamField>
+
+<ParamField path="location" type="string" required>
+  Your home base city and country (for example, *Los Angeles, United States*). Filmmakers frequently filter by location, especially for productions that cannot cover travel costs.
+</ParamField>
+
+<ParamField path="willing_to_travel" type="object">
+  Whether you are open to working outside your home city. Set this to **Yes** or **No**, and if yes, specify a **maximum travel distance** in miles or kilometres. Filmmakers can filter search results by travel willingness, so enabling this expands your visibility considerably.
+</ParamField>
+
+<ParamField path="skills_and_equipment" type="array">
+  Free-form tags representing your technical skills, specialist certifications, and equipment you own or regularly operate — for example, `ARRI ALEXA`, `Steadicam`, `Color Grading`, `DIT`, `Pro Tools`, `Drone (FAA Part 107)`. Tags are used as search keywords, so add every relevant term.
+</ParamField>
+
+<ParamField path="day_rate" type="string">
+  Your standard day rate, shown either as an **exact figure** or a **range** (for example, *$600 – $800/day*). Displaying a rate helps filmmakers self-qualify before reaching out, reducing wasted conversations. You can hide this from public view in your Privacy Controls if preferred.
+</ParamField>
+
+<ParamField path="union_status" type="enum">
+  Select the status that applies to you:
+
+  - **Union** — you are a member of a recognised industry union (e.g., IATSE, SAG-AFTRA, Teamsters).
+  - **Non-Union** — you work outside union agreements.
+
+  Some productions filter by union status when their budget or agreements require specific crew classifications.
+</ParamField>
+
+<ParamField path="demo_reel_url" type="url">
+  A direct link to your demo reel or online portfolio — Vimeo, YouTube, and personal websites are all supported. This is one of the highest-impact fields on your profile; filmmakers rank demo reels as the single most influential factor in deciding whether to reach out.
+</ParamField>
+
+<ParamField path="past_credits" type="array">
+  Individual credit entries, each containing a **project title**, **year**, and **your role**. Add up to **20 credits**. Credits are listed chronologically on your public profile and contribute to CREW's Verified Credits programme.
+</ParamField>
+
+<ParamField path="imdb_link" type="url">
+  A link to your IMDb page. When provided, a verified IMDb badge appears next to your name, giving filmmakers an independent way to validate your credits.
+</ParamField>
+
+<ParamField path="availability_calendar" type="calendar">
+  An interactive calendar where you mark dates as **Available** or **Unavailable**. Filmmakers can filter crew search results by date range, so an up-to-date calendar means you only surface for projects whose shooting schedules genuinely work for you.
+</ParamField>
+
+<ParamField path="social_links" type="object">
+  Optional links to your professional social channels. CREW supports **Instagram**, **Vimeo**, and **YouTube**. Links open in a new tab from your public profile card.
+</ParamField>
+
+## Availability Calendar
+
+The Availability Calendar lets filmmakers know at a glance whether you are free for their shoot dates — and it lets CREW's search engine include or exclude you from date-filtered results automatically.
+
+<Steps>
+  <Step title="Open your profile dashboard">
+    Log in to CREW, click your avatar in the top-right corner, and select **Edit Profile**. The **Availability** tab is the third tab along the top of the editor.
+  </Step>
+  <Step title="Mark your availability">
+    Click any date to toggle it between **Available** (green) and **Unavailable** (grey). You can click and drag to select a range of dates at once. Dates with no marking default to Available, so only mark the days you are definitely committed elsewhere.
+  </Step>
+  <Step title="Save your changes">
+    Click **Save Availability** at the bottom of the calendar panel. Changes are reflected in search results within a few minutes.
+  </Step>
+  <Step title="Keep it current">
+    Revisit the calendar whenever you book a new job or a project falls through. Filmmakers lose trust in crew members whose calendar says available but who turn out to be booked — and CREW's algorithm factors calendar accuracy into search ranking over time.
+  </Step>
+</Steps>
+
+<Tip>
+  Crew members with a **demo reel link** on their profile receive **4× more inquiries** than those without one. Even a short, well-edited reel hosted on Vimeo makes a measurable difference — add yours before you do anything else.
+</Tip>
+
+<Note>
+  Curious about exactly how filmmakers search for crew? See [Searching for Crew](/search/searching-crew) for a full breakdown of the filters, keywords, and ranking signals that determine who surfaces at the top of results.
+</Note>
+
+---
+
+<CardGroup cols={2}>
+  <Card
+    title="Filmmaker Profile"
+    icon="film"
+    href="/profiles/filmmaker-profile"
+  >
+    Understand what filmmakers put on their own profiles and what you can learn about a production before accepting an inquiry.
+  </Card>
+  <Card
+    title="Project Listings"
+    icon="clapperboard"
+    href="/collaboration/project-listings"
+  >
+    Browse open roles posted by filmmakers and apply directly to productions that match your skills and availability.
+  </Card>
+</CardGroup>

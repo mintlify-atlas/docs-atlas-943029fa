@@ -1,0 +1,105 @@
+---
+title: "CREW REST API Overview"
+sidebarTitle: "Overview"
+description: "The CREW REST API lets you integrate crew discovery, location browsing, equipment listings, and opportunity management into your own tools and workflows."
+---
+
+The CREW API is a RESTful HTTP API that gives you programmatic access to the full CREW platform. All requests are made to `https://api.crew.app/v1` and all responses are returned as JSON. Whether you're building production management integrations, casting tools, or automating listing management, the CREW API provides the building blocks you need.
+
+## Base URL
+
+All API endpoints share the following base URL:
+
+```
+https://api.crew.app/v1
+```
+
+## Request Format
+
+The CREW API follows standard REST conventions:
+
+- **Content type** — Send JSON request bodies with the `Content-Type: application/json` header on `POST`, `PUT`, and `PATCH` requests.
+- **HTTP methods** — Use `GET` to retrieve resources, `POST` to create them, `PUT` or `PATCH` to update them, and `DELETE` to remove them.
+- **Query parameters** — Filter, sort, and paginate `GET` requests using URL-encoded query parameters (e.g., `?location=london&role=cinematographer`).
+
+## Response Format
+
+All successful responses return a JSON object with a `data` envelope containing the requested resource or array of resources. Paginated list responses also include a `meta` object with pagination details.
+
+```json
+{
+  "data": [...],
+  "meta": {
+    "total": 124,
+    "page": 1,
+    "per_page": 20
+  }
+}
+```
+
+<Note>
+  Single-resource responses (e.g., fetching one user by ID) return `data` as an object rather than an array. The `meta` field is omitted for non-paginated responses.
+</Note>
+
+## HTTP Status Codes
+
+The API uses standard HTTP status codes to indicate the outcome of every request.
+
+| Status Code | Meaning |
+|---|---|
+| `200 OK` | The request succeeded and the response body contains the result. |
+| `201 Created` | A new resource was successfully created. |
+| `400 Bad Request` | The request was malformed or contained invalid parameters. |
+| `401 Unauthorized` | The API key is missing or invalid. |
+| `403 Forbidden` | The request was authenticated but the key lacks sufficient permissions. |
+| `404 Not Found` | The requested resource does not exist. |
+| `422 Unprocessable Entity` | The request was well-formed but failed validation. The response body contains an `errors` array with details. |
+| `429 Too Many Requests` | You have exceeded the rate limit for your plan. |
+| `500 Internal Server Error` | An unexpected error occurred on the CREW servers. |
+
+## Rate Limits
+
+Rate limits are enforced per API key and vary by plan:
+
+- **Free tier** — 100 requests per minute
+- **Pro tier** — 1,000 requests per minute
+
+Every API response includes the following headers so you can track your usage in real time:
+
+| Header | Description |
+|---|---|
+| `X-RateLimit-Limit` | The maximum number of requests allowed per minute for your plan. |
+| `X-RateLimit-Remaining` | The number of requests remaining in the current window. |
+| `X-RateLimit-Reset` | The Unix timestamp at which the current rate limit window resets. |
+
+<Tip>
+  If you receive a `429 Too Many Requests` response, wait until the time indicated by `X-RateLimit-Reset` before retrying. Consider implementing exponential backoff for resilient integrations.
+</Tip>
+
+## Pagination
+
+List endpoints return paginated results by default. Use the `page` and `per_page` query parameters to navigate through result sets:
+
+- `?page=2` — fetch the second page of results (default: `1`)
+- `?per_page=50` — set the number of results per page (default: `20`, maximum: `100`)
+
+The `meta` object in every paginated response tells you the total number of records and your current position so you can determine how many pages exist.
+
+```
+GET https://api.crew.app/v1/listings?page=3&per_page=25
+```
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key" href="/api/authentication">
+    Learn how to generate an API key and authenticate every request.
+  </Card>
+  <Card title="Users" icon="user" href="/api/users">
+    Search and retrieve crew member profiles and contact details.
+  </Card>
+  <Card title="Listings" icon="film" href="/api/listings">
+    Browse, create, and manage location and equipment listings.
+  </Card>
+  <Card title="Opportunities" icon="briefcase" href="/api/opportunities">
+    Post and discover production opportunities and open roles.
+  </Card>
+</CardGroup>

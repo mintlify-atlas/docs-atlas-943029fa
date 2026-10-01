@@ -1,0 +1,538 @@
+---
+title: "Equipment API — Film Gear Rental Listings"
+sidebarTitle: "Equipment"
+description: "REST API endpoints for browsing film equipment rental listings, retrieving gear details, and creating equipment listings on CREW."
+---
+
+The Equipment API powers CREW's gear rental marketplace, covering everything from cinema cameras and prime lens sets to HMI lighting packages, boom poles, and production vehicles. Search available kit by category, brand, condition, and shoot dates, then retrieve full detail on any piece of equipment including accessory lists and availability calendars. Sensitive information such as pickup addresses is protected until an inquiry is confirmed.
+
+<Card title="Authentication" icon="lock" href="/api/authentication">
+  Browsing equipment listings is available to all authenticated users. Creating listings requires the `write` scope.
+</Card>
+
+---
+
+## GET /equipment
+
+Search and filter all equipment rental listings. Results are paginated and each record in the list view includes up to two photos.
+
+<Tip>
+  Use `delivery_available=true` to surface only listings whose owners offer gear delivery — useful for remote productions where crew can't travel to collect kit.
+</Tip>
+
+### Query Parameters
+
+<ParamField query="q" type="string">
+  Full-text search query. Matched against title, brand, model, and description.
+</ParamField>
+
+<ParamField query="category" type="string">
+  Filter by gear category. One of: `cameras`, `lenses`, `lighting`, `audio`, `drones`, `monitors`, `power`, `transport`.
+</ParamField>
+
+<ParamField query="brand" type="string">
+  Filter by manufacturer or brand name (e.g. `ARRI`, `Sony`, `Sennheiser`).
+</ParamField>
+
+<ParamField query="rate_max" type="integer">
+  Maximum acceptable daily rental rate in the account's billing currency.
+</ParamField>
+
+<ParamField query="condition" type="string">
+  Filter by equipment condition. One of: `excellent`, `good`, `fair`.
+</ParamField>
+
+<ParamField query="available_from" type="date">
+  Start of the required availability window. Format: `YYYY-MM-DD`.
+</ParamField>
+
+<ParamField query="available_to" type="date">
+  End of the required availability window. Format: `YYYY-MM-DD`.
+</ParamField>
+
+<ParamField query="delivery_available" type="boolean">
+  When `true`, returns only listings where the owner offers delivery.
+</ParamField>
+
+<ParamField query="city" type="string">
+  Filter by the city where the equipment is located (e.g. `Los Angeles`, `Berlin`).
+</ParamField>
+
+<ParamField query="page" type="integer" default="1">
+  Page number for paginated results.
+</ParamField>
+
+<ParamField query="per_page" type="integer" default="20">
+  Number of results per page. Maximum: `100`.
+</ParamField>
+
+### Response
+
+Returns an array of equipment summary objects.
+
+<ResponseField name="id" type="string">
+  Unique identifier for the equipment listing.
+</ResponseField>
+
+<ResponseField name="title" type="string">
+  Display title of the listing (e.g. `ARRI ALEXA Mini LF Body`).
+</ResponseField>
+
+<ResponseField name="category" type="string">
+  Gear category: `cameras`, `lenses`, `lighting`, `audio`, `drones`, `monitors`, `power`, or `transport`.
+</ResponseField>
+
+<ResponseField name="brand" type="string">
+  Manufacturer or brand name.
+</ResponseField>
+
+<ResponseField name="model" type="string">
+  Model name or number.
+</ResponseField>
+
+<ResponseField name="condition" type="string">
+  Current condition of the equipment: `excellent`, `good`, or `fair`.
+</ResponseField>
+
+<ResponseField name="daily_rate" type="integer">
+  Daily rental rate in the owner's billing currency.
+</ResponseField>
+
+<ResponseField name="weekly_rate" type="integer">
+  Weekly rental rate. May be `null` if the owner has not set one.
+</ResponseField>
+
+<ResponseField name="deposit_amount" type="integer">
+  Security deposit required. May be `null` if not set.
+</ResponseField>
+
+<ResponseField name="city" type="string">
+  City where the equipment is located.
+</ResponseField>
+
+<ResponseField name="delivery_available" type="boolean">
+  Whether the owner offers delivery of the equipment.
+</ResponseField>
+
+<ResponseField name="photo_urls" type="array">
+  Array of absolute URLs for the first two listing photos. Retrieve the full set via `GET /equipment/:id`.
+</ResponseField>
+
+<ResponseField name="owner" type="object">
+  The CREW member listing the equipment for rent.
+
+  <Expandable title="Owner object">
+    <ResponseField name="id" type="string">
+      Unique identifier of the owner.
+    </ResponseField>
+    <ResponseField name="display_name" type="string">
+      The owner's public display name.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="average_rating" type="float">
+  Mean rating from confirmed rentals. Range: `0.0` – `5.0`.
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl -G https://api.crew.film/v1/equipment \
+  -H "Authorization: Bearer $CREW_API_KEY" \
+  --data-urlencode "category=cameras" \
+  --data-urlencode "brand=ARRI" \
+  --data-urlencode "condition=excellent" \
+  --data-urlencode "available_from=2025-10-01" \
+  --data-urlencode "available_to=2025-10-07" \
+  --data-urlencode "city=Los Angeles" \
+  --data-urlencode "rate_max=600"
+```
+
+```javascript JavaScript
+const params = new URLSearchParams({
+  category: "cameras",
+  brand: "ARRI",
+  condition: "excellent",
+  available_from: "2025-10-01",
+  available_to: "2025-10-07",
+  city: "Los Angeles",
+  rate_max: 600,
+});
+
+const res = await fetch(`https://api.crew.film/v1/equipment?${params}`, {
+  headers: {
+    Authorization: `Bearer ${process.env.CREW_API_KEY}`,
+  },
+});
+
+const { data } = await res.json();
+console.log(data);
+```
+
+```python Python
+import os
+import requests
+
+params = {
+    "category": "cameras",
+    "brand": "ARRI",
+    "condition": "excellent",
+    "available_from": "2025-10-01",
+    "available_to": "2025-10-07",
+    "city": "Los Angeles",
+    "rate_max": 600,
+}
+
+response = requests.get(
+    "https://api.crew.film/v1/equipment",
+    headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
+    params=params,
+)
+
+gear = response.json()["data"]
+print(gear)
+```
+
+</CodeGroup>
+
+---
+
+## GET /equipment/:id
+
+Retrieve the full detail record for a single equipment listing. All fields from the list view are included, plus the complete description, included accessories, full photo set, and availability calendar. The pickup address is only returned after a confirmed inquiry.
+
+<Warning>
+  The `pickup_address` field is **redacted** until an inquiry is confirmed. Always check for its presence before rendering it to end users.
+</Warning>
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  The unique ID of the equipment listing to retrieve.
+</ParamField>
+
+### Response
+
+<ResponseField name="id" type="string">
+  Unique identifier for the equipment listing.
+</ResponseField>
+
+<ResponseField name="title" type="string">
+  Display title of the listing.
+</ResponseField>
+
+<ResponseField name="category" type="string">
+  Gear category.
+</ResponseField>
+
+<ResponseField name="brand" type="string">
+  Manufacturer or brand name.
+</ResponseField>
+
+<ResponseField name="model" type="string">
+  Model name or number.
+</ResponseField>
+
+<ResponseField name="condition" type="string">
+  Current condition: `excellent`, `good`, or `fair`.
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Full description of the item, its history, and any usage notes.
+</ResponseField>
+
+<ResponseField name="daily_rate" type="integer">
+  Daily rental rate in the owner's billing currency.
+</ResponseField>
+
+<ResponseField name="weekly_rate" type="integer">
+  Weekly rental rate. May be `null` if not set.
+</ResponseField>
+
+<ResponseField name="deposit_amount" type="integer">
+  Security deposit required. May be `null` if not set.
+</ResponseField>
+
+<ResponseField name="city" type="string">
+  City where the equipment is located.
+</ResponseField>
+
+<ResponseField name="delivery_available" type="boolean">
+  Whether the owner offers delivery.
+</ResponseField>
+
+<ResponseField name="included_accessories" type="array">
+  List of accessories or items included with the rental (e.g. `["2x V-mount batteries", "Anton Bauer charger", "Pelican 1510 case"]`).
+</ResponseField>
+
+<ResponseField name="serial_number" type="string">
+  Equipment serial number. `null` unless the owner has chosen to share it.
+</ResponseField>
+
+<ResponseField name="full_photo_urls" type="array">
+  Array of absolute URLs for all listing photos.
+</ResponseField>
+
+<ResponseField name="availability" type="array">
+  Array of available date ranges.
+
+  <Expandable title="Availability range object">
+    <ResponseField name="from" type="string">
+      Start date of an available window. Format: `YYYY-MM-DD`.
+    </ResponseField>
+    <ResponseField name="to" type="string">
+      End date of an available window. Format: `YYYY-MM-DD`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="owner" type="object">
+  The CREW member listing the equipment.
+
+  <Expandable title="Owner object">
+    <ResponseField name="id" type="string">
+      Unique identifier of the owner.
+    </ResponseField>
+    <ResponseField name="display_name" type="string">
+      The owner's public display name.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="average_rating" type="float">
+  Mean rating from confirmed rentals. Range: `0.0` – `5.0`.
+</ResponseField>
+
+<ResponseField name="pickup_address" type="string">
+  Full pickup address for the equipment. **Only present after an inquiry is confirmed.**
+</ResponseField>
+
+<CodeGroup>
+
+```bash curl
+curl https://api.crew.film/v1/equipment/eqp_2mLsY54nHw \
+  -H "Authorization: Bearer $CREW_API_KEY"
+```
+
+```javascript JavaScript
+const equipmentId = "eqp_2mLsY54nHw";
+
+const res = await fetch(`https://api.crew.film/v1/equipment/${equipmentId}`, {
+  headers: {
+    Authorization: `Bearer ${process.env.CREW_API_KEY}`,
+  },
+});
+
+const gear = await res.json();
+
+if (gear.pickup_address) {
+  console.log("Pickup address:", gear.pickup_address);
+} else {
+  console.log("Pickup address revealed after inquiry confirmation.");
+}
+
+console.log("Accessories:", gear.included_accessories);
+```
+
+```python Python
+import os
+import requests
+
+equipment_id = "eqp_2mLsY54nHw"
+
+response = requests.get(
+    f"https://api.crew.film/v1/equipment/{equipment_id}",
+    headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
+)
+
+gear = response.json()
+
+if gear.get("pickup_address"):
+    print("Pickup address:", gear["pickup_address"])
+else:
+    print("Pickup address revealed after inquiry confirmation.")
+
+print("Accessories:", gear["included_accessories"])
+```
+
+</CodeGroup>
+
+---
+
+## POST /equipment
+
+Create a new equipment rental listing. At least one photo is required. Listings are immediately visible in search results after creation. Requires a valid API key with the `write` scope.
+
+<Note>
+  Providing a `weekly_rate` lower than `7 × daily_rate` is a good way to attract longer-term rentals and reduce turnover between bookings.
+</Note>
+
+### Request Body
+
+<ParamField body="title" type="string" required>
+  A concise, descriptive title for the listing (e.g. `Sony FX9 Body — Full Frame Cinema Camera`).
+</ParamField>
+
+<ParamField body="category" type="string" required>
+  Gear category. One of: `cameras`, `lenses`, `lighting`, `audio`, `drones`, `monitors`, `power`, `transport`.
+</ParamField>
+
+<ParamField body="brand" type="string" required>
+  Manufacturer or brand name.
+</ParamField>
+
+<ParamField body="model" type="string" required>
+  Model name or number.
+</ParamField>
+
+<ParamField body="condition" type="string" required>
+  Current condition of the equipment. One of: `excellent`, `good`, `fair`.
+</ParamField>
+
+<ParamField body="daily_rate" type="integer" required>
+  Daily rental rate in your account's billing currency.
+</ParamField>
+
+<ParamField body="weekly_rate" type="integer">
+  Optional weekly rental rate. Recommended to be less than `7 × daily_rate`.
+</ParamField>
+
+<ParamField body="deposit_amount" type="integer">
+  Security deposit amount. Displayed prominently on the listing.
+</ParamField>
+
+<ParamField body="description" type="string">
+  Full description of the item, its condition history, included accessories, and any restrictions on use.
+</ParamField>
+
+<ParamField body="included_accessories" type="array">
+  Array of strings listing items included in the rental package (e.g. `["Tilta Nucleus-M follow focus", "SmallRig cage"]`).
+</ParamField>
+
+<ParamField body="delivery_available" type="boolean">
+  Whether you offer delivery. Defaults to `false`.
+</ParamField>
+
+<ParamField body="city" type="string" required>
+  City where the equipment is located.
+</ParamField>
+
+<ParamField body="photo_urls" type="array" required>
+  Array of publicly accessible photo URLs. Minimum: **1 photo**.
+</ParamField>
+
+### Response
+
+Returns `201 Created` with the full created equipment object.
+
+<CodeGroup>
+
+```bash curl
+curl -X POST https://api.crew.film/v1/equipment \
+  -H "Authorization: Bearer $CREW_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Sony FX9 Body — Full Frame Cinema Camera",
+    "category": "cameras",
+    "brand": "Sony",
+    "model": "FX9",
+    "condition": "excellent",
+    "daily_rate": 350,
+    "weekly_rate": 1800,
+    "deposit_amount": 2000,
+    "description": "Sony FX9 in excellent condition. Less than 200 hours. Full frame sensor with dual base ISO. Ideal for docs, commercials, and narrative features.",
+    "included_accessories": [
+      "2x Sony BP-U60 batteries",
+      "Sony charger",
+      "XLR audio adapter",
+      "Wooden Camera cage"
+    ],
+    "delivery_available": true,
+    "city": "Los Angeles",
+    "photo_urls": [
+      "https://cdn.example.com/fx9-front.jpg",
+      "https://cdn.example.com/fx9-side.jpg"
+    ]
+  }'
+```
+
+```javascript JavaScript
+const res = await fetch("https://api.crew.film/v1/equipment", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${process.env.CREW_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    title: "Sony FX9 Body — Full Frame Cinema Camera",
+    category: "cameras",
+    brand: "Sony",
+    model: "FX9",
+    condition: "excellent",
+    daily_rate: 350,
+    weekly_rate: 1800,
+    deposit_amount: 2000,
+    description:
+      "Sony FX9 in excellent condition. Less than 200 hours. Full frame sensor with dual base ISO.",
+    included_accessories: [
+      "2x Sony BP-U60 batteries",
+      "Sony charger",
+      "XLR audio adapter",
+      "Wooden Camera cage",
+    ],
+    delivery_available: true,
+    city: "Los Angeles",
+    photo_urls: [
+      "https://cdn.example.com/fx9-front.jpg",
+      "https://cdn.example.com/fx9-side.jpg",
+    ],
+  }),
+});
+
+const equipment = await res.json();
+console.log("Created listing:", equipment.id);
+```
+
+```python Python
+import os
+import requests
+
+payload = {
+    "title": "Sony FX9 Body — Full Frame Cinema Camera",
+    "category": "cameras",
+    "brand": "Sony",
+    "model": "FX9",
+    "condition": "excellent",
+    "daily_rate": 350,
+    "weekly_rate": 1800,
+    "deposit_amount": 2000,
+    "description": (
+        "Sony FX9 in excellent condition. Less than 200 hours. "
+        "Full frame sensor with dual base ISO."
+    ),
+    "included_accessories": [
+        "2x Sony BP-U60 batteries",
+        "Sony charger",
+        "XLR audio adapter",
+        "Wooden Camera cage",
+    ],
+    "delivery_available": True,
+    "city": "Los Angeles",
+    "photo_urls": [
+        "https://cdn.example.com/fx9-front.jpg",
+        "https://cdn.example.com/fx9-side.jpg",
+    ],
+}
+
+response = requests.post(
+    "https://api.crew.film/v1/equipment",
+    headers={"Authorization": f"Bearer {os.environ['CREW_API_KEY']}"},
+    json=payload,
+)
+
+equipment = response.json()
+print("Created listing:", equipment["id"])
+```
+
+</CodeGroup>

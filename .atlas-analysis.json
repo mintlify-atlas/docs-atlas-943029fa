@@ -1,23 +1,11 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
-  "name": "CREW",
+  "projectType": "saas",
+  "projectName": "CREW",
+  "projectDescription": "A platform where filmmakers can find people, locations, equipment, and opportunities for their productions.",
   "theme": "almond",
-  "colors": {
-    "primary": "#E8472A",
-    "light": "#FAD4CC",
-    "dark": "#7A1F0F"
-  },
-  "navbar": {
-    "primary": {
-      "type": "github",
-      "href": "https://github.com/jumanahelh/CREW"
-    }
-  },
-  "footer": {
-    "socials": {
-      "github": "https://github.com/jumanahelh/CREW"
-    }
-  },
+  "primaryColor": "#E8472A",
+  "lightColor": "#FAD4CC",
+  "darkColor": "#7A1F0F",
   "navigation": {
     "tabs": [
       {
@@ -89,5 +77,28 @@
         ]
       }
     ]
-  }
+  },
+  "keyFeatures": [
+    "Crew discovery — search and connect with filmmakers, directors, cinematographers, and other film professionals",
+    "Location scouting — browse and list filming locations with photos, availability, and pricing",
+    "Equipment marketplace — find and rent cameras, lighting, audio, and other production equipment",
+    "Opportunity board — post and apply for film production roles, gigs, and projects",
+    "Filmmaker profiles — showcase portfolio, credits, skills, and availability",
+    "Messaging and collaboration — communicate directly with crew members and location owners",
+    "Reviews and ratings — build reputation through verified reviews from past collaborations"
+  ],
+  "publicApiSurface": [
+    "GET /api/users — list and search users/crew members",
+    "GET /api/users/:id — get a specific user profile",
+    "POST /api/users — create a new user account",
+    "PUT /api/users/:id — update user profile",
+    "GET /api/listings — browse production listings and job opportunities",
+    "POST /api/listings — create a new listing",
+    "GET /api/locations — search filming locations",
+    "POST /api/locations — list a new location",
+    "GET /api/equipment — browse available equipment",
+    "POST /api/equipment — list equipment for rent",
+    "GET /api/opportunities — browse production opportunities",
+    "POST /api/opportunities — post a new opportunity"
+  ]
 }

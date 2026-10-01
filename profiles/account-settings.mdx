@@ -1,0 +1,135 @@
+---
+title: "Manage Your CREW Account Settings"
+sidebarTitle: "Account Settings"
+description: "Update your CREW account email, password, notification preferences, privacy controls, and connected profiles from the Account Settings page."
+---
+
+Every aspect of how your CREW account behaves — from your login credentials to who can message you — is controlled from the Account Settings page. To get there, click your **avatar in the top-right corner** of any CREW page and select **Settings** from the dropdown menu. Changes saved here apply immediately across all devices where you are logged in.
+
+## Account Settings Sections
+
+<AccordionGroup>
+  <Accordion title="Email & Password" icon="lock">
+    ### Login Email
+
+    Your login email is the address CREW uses for account-related communications and password resets. To change it:
+
+    <Steps>
+      <Step title="Enter your new email address">
+        Type the new address into the **New Email** field under **Email & Password**.
+      </Step>
+      <Step title="Confirm your current password">
+        For security, CREW requires you to confirm your current password before any email change is processed.
+      </Step>
+      <Step title="Verify the new address">
+        CREW sends a verification link to the new address. Click that link within **24 hours** to complete the change. Until verified, your old address remains active.
+      </Step>
+    </Steps>
+
+    ### Password
+
+    To update your password, enter your current password and then your new password twice. CREW enforces the following requirements:
+
+    - Minimum **8 characters**
+    - At least **one uppercase letter**
+    - At least **one number**
+
+    After saving, all other active sessions are signed out automatically as a security measure.
+  </Accordion>
+
+  <Accordion title="Profile Type" icon="id-card">
+    CREW supports three profile configurations under a single login:
+
+    - **Filmmaker only** — a single public filmmaker profile is active.
+    - **Crew only** — a single public crew member profile is active.
+    - **Both** — two separate public profiles are created and linked to the same login. You switch between them using the profile switcher in the top navigation bar.
+
+    Enabling both profile types does not merge the profiles — each has its own bio, credits, availability settings, and public URL. Filmmakers and crew searching CREW will see only the relevant profile type in their respective search contexts.
+
+    <Info>
+      Switching from "Both" back to a single profile type hides the deactivated profile from search but does not delete it. You can re-enable it at any time from this same setting.
+    </Info>
+  </Accordion>
+
+  <Accordion title="Notification Preferences" icon="bell">
+    ### Email Notifications
+
+    Toggle each email notification type on or off independently:
+
+    | Notification | Description |
+    |---|---|
+    | **New Messages** | Alerts when another CREW member sends you a direct message |
+    | **Opportunity Applications** | Alerts when someone applies to a listing you posted |
+    | **Listing Inquiries** | Alerts when a filmmaker or crew member enquires about a specific project listing |
+    | **Review Requests** | Reminders to leave a review after a collaboration is marked complete |
+    | **System Updates** | Platform announcements, policy updates, and feature releases |
+
+    ### In-App Notifications
+
+    In-app notifications appear in the bell icon in the top navigation bar. You can independently toggle the same categories listed above for in-app delivery. Disabling an email notification does not disable the in-app version — configure each channel separately.
+  </Accordion>
+
+  <Accordion title="Privacy Controls" icon="eye-slash">
+    CREW gives you granular control over your profile's visibility and accessibility. Each option below can be toggled independently:
+
+    **Hide profile from search**
+    Removes your profile from all CREW search results and the public discovery feed. Your profile page remains accessible to anyone who has a direct link — this is useful if you want to share your profile selectively without appearing in unsolicited searches.
+
+    **Hide day rate from public view**
+    Prevents your day rate or rate range from appearing on your public profile card. Filmmakers can still see it once a conversation thread is opened, if you choose to share it there directly.
+
+    **Disable direct messages from non-connections**
+    Restricts inbound direct messages to only those CREW members you have previously collaborated with or manually connected with. All other members will see a **Request to Connect** button instead of a message field on your profile.
+  </Accordion>
+
+  <Accordion title="Connected Accounts" icon="link">
+    Linking external accounts lets CREW display verified badges on your profile and pull in public data where relevant.
+
+    | Platform | What it does |
+    |---|---|
+    | **IMDb** | Displays a verified IMDb badge on your profile; filmmakers can cross-check credits directly |
+    | **Instagram** | Adds an Instagram icon and link to your public profile card |
+    | **Vimeo** | Adds a Vimeo icon and link; particularly valuable for cinematographers and editors |
+    | **YouTube** | Adds a YouTube icon and link for reel or behind-the-scenes content |
+
+    To link an account, click **Connect** next to the platform name and follow the OAuth prompt. To unlink, click **Disconnect** — this removes the badge and link from your public profile but does not affect your account on that platform.
+  </Accordion>
+
+  <Accordion title="Danger Zone" icon="triangle-exclamation">
+    ### Deactivate Account
+
+    Deactivating your account immediately hides your public profile from all search results and removes your listings from discovery. Your data is retained in full and your account can be reactivated at any time by logging back in and selecting **Reactivate** from the Settings page.
+
+    ### Permanently Delete Account
+
+    Permanent deletion removes all of your account data from CREW, including your profile, credits, messages, listings, and reviews. This action cannot be undone. After requesting deletion:
+
+    - Your profile is hidden immediately.
+    - All associated data is scheduled for permanent removal after **30 days**.
+    - During the 30-day window, you can cancel the deletion by logging back in.
+    - After 30 days, the data is irrecoverably purged from CREW's systems.
+
+    <Warning>
+      **Account deletion is permanent.** Before proceeding, export your credits and reviews by navigating to **Settings → Export Data**. This downloads a full archive of your profile content, credit history, and received reviews in JSON and CSV formats — the only way to retain a record of your work on the platform.
+    </Warning>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+<CardGroup cols={2}>
+  <Card
+    title="Filmmaker Profile"
+    icon="film"
+    href="/profiles/filmmaker-profile"
+  >
+    Set up or update your filmmaker profile to attract the right crew to your productions.
+  </Card>
+  <Card
+    title="Crew Profile"
+    icon="user-tie"
+    href="/profiles/crew-profile"
+  >
+    Build out your crew profile with credits, a reel, and availability so filmmakers can find and hire you.
+  </Card>
+</CardGroup>
